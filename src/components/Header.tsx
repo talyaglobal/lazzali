@@ -1,0 +1,170 @@
+'use client'
+
+import { useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { Search, ShoppingBag, User, Menu, X, Globe } from 'lucide-react'
+import { useStore } from '@/lib/store'
+import { brands } from '@/lib/data'
+import { useTranslation, locales, Locale } from '@/lib/i18n'
+
+export default function Header() {
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [currentLocale, setCurrentLocale] = useState<Locale>('tr')
+  const { t } = useTranslation(currentLocale)
+  const { cartCount, toggleCart, isMobileMenuOpen, toggleMobileMenu } = useStore()
+
+  return (
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Top Bar */}
+        <div className="hidden md:flex justify-center py-2 text-xs font-medium tracking-wide text-gray-600 bg-luxury-black text-white">
+          ÜCRETSİZ KARGO 2000₺ ÜZERİ • VIP ERİŞİM • ÖZEL KOLEKSİYONLAR
+        </div>
+        
+        {/* Main Header */}
+        <div className="flex items-center justify-between py-4">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={toggleMobileMenu}
+            className="md:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+          
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0">
+            <div className="flex items-center space-x-3">
+              <Image
+                src="/logo.jpg"
+                alt="Lazzali Logo"
+                width={40}
+                height={40}
+                className="rounded-sm"
+              />
+              <span className="font-luxury-serif text-2xl font-bold tracking-tight">LAZZALI</span>
+            </div>
+          </Link>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <div className="relative group">
+              <Link href="/brands" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">
+                {t('brands')}
+              </Link>
+              {/* Mega Menu */}
+              <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                <div className="bg-white rounded-lg shadow-xl border p-6 w-96">
+                  <div className="grid grid-cols-2 gap-4">
+                    {brands.slice(0, 6).map((brand: any) => (
+                      <div key={brand.id} className="p-2 hover:bg-gray-50 rounded cursor-pointer transition-colors">
+                        <div className="font-medium text-sm">{brand.name}</div>
+                        <div className="text-xs text-gray-500 mt-1">{brand.country}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <Link href="/products?new=true" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('newArrivals')}</Link>
+            <Link href="/products?category=clothing" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('clothing')}</Link>
+            <Link href="/products?category=footwear" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('footwear')}</Link>
+            <Link href="/products?category=accessories" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('accessories')}</Link>
+            <Link href="/products?sale=true" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('sale')}</Link>
+          </nav>
+          
+          {/* Right Actions */}
+          <div className="flex items-center space-x-4">
+            {/* Language Selector */}
+            <div className="relative group hidden md:block">
+              <button className="flex items-center space-x-1 p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <Globe className="h-4 w-4" />
+                <span className="text-sm font-medium uppercase">{currentLocale}</span>
+              </button>
+              <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                <div className="bg-white rounded-lg shadow-xl border py-2 w-24">
+                  {locales.map((locale: Locale) => (
+                    <button
+                      key={locale}
+                      onClick={() => setCurrentLocale(locale)}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                        currentLocale === locale ? 'bg-gray-100 font-medium' : ''
+                      }`}
+                    >
+                      {locale.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* Search */}
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+            
+            {/* Account */}
+            <button className="hidden md:flex p-2 rounded-full hover:bg-gray-100 transition-colors">
+              <User className="h-5 w-5" />
+            </button>
+            
+            {/* Shopping Bag */}
+            <button 
+              onClick={toggleCart}
+              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-luxury-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+        
+        {/* Search Bar */}
+        {isSearchOpen && (
+          <div className="border-t border-gray-100 py-4 animate-slide-up">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder={t('search')}
+                className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-luxury-gold focus:border-transparent"
+                autoFocus
+              />
+              <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-gray-100 bg-white">
+          <div className="px-4 py-6 space-y-4">
+            <Link href="/brands" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('brands')}</Link>
+            <Link href="/products?new=true" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('newArrivals')}</Link>
+            <Link href="/products?category=clothing" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('clothing')}</Link>
+            <Link href="/products?category=footwear" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('footwear')}</Link>
+            <Link href="/products?category=accessories" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('accessories')}</Link>
+            <Link href="/products?sale=true" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('sale')}</Link>
+            <div className="pt-4 border-t border-gray-200">
+              <Link href="/account" className="flex items-center space-x-3 text-gray-700 hover:text-luxury-gold transition-colors">
+                <User className="h-5 w-5" />
+                <span>{t('account')}</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </header>
+  )
+}

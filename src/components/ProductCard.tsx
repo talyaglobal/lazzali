@@ -1,0 +1,147 @@
+'use client'
+
+import { motion } from 'framer-motion'
+import Image from 'next/image'
+import { Heart, Eye } from 'lucide-react'
+import { Product } from '@/types'
+import { useStore } from '@/lib/store'
+
+interface ProductCardProps {
+  product: Product
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useStore()
+  
+  const handleAddToCart = () => {
+    addToCart({
+      id: `${product.id}-${product.sizes[0]}-${product.colors[0]}`,
+      productId: product.id,
+      name: product.name,
+      brand: product.brand,
+      price: product.price,
+      image: product.images[0],
+      size: product.sizes[0],
+      color: product.colors[0]
+    })
+  }
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true }}
+      className="product-card"
+    >
+      {/* Product Image */}
+      <div className="relative aspect-[4/5] overflow-hidden">
+        <Image
+          src={product.images[0]}
+          alt={product.name}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        
+        {/* Badges */}
+        <div className="absolute top-4 left-4 space-y-2">
+          {product.isNew && (
+            <span className="bg-luxury-gold text-white text-xs font-medium px-3 py-1 rounded-full">
+              NEW
+            </span>
+          )}
+          {product.isLimitedEdition && (
+            <span className="bg-red-500 text-white text-xs font-medium px-3 py-1 rounded-full">
+              LIMITED
+            </span>
+          )}
+          {product.originalPrice && (
+            <span className="bg-green-500 text-white text-xs font-medium px-3 py-1 rounded-full">
+              SALE
+            </span>
+          )}
+        </div>
+        
+        {/* Hover Actions */}
+        <div className="absolute top-4 right-4 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50"
+          >
+            <Heart className="w-5 h-5" />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50"
+          >
+            <Eye className="w-5 h-5" />
+          </motion.button>
+        </div>
+        
+        {/* Quick Add Button */}
+        <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+          <motion.button
+            onClick={handleAddToCart}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full bg-luxury-black text-white py-3 font-medium text-sm tracking-wide uppercase hover:bg-luxury-charcoal transition-colors"
+          >
+            Quick Add
+          </motion.button>
+        </div>
+      </div>
+      
+      {/* Product Info */}
+      <div className="p-6 space-y-3">
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+            {product.brand}
+          </p>
+          <h3 className="font-medium text-gray-900 hover:text-luxury-gold transition-colors cursor-pointer">
+            {product.name}
+          </h3>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          {product.originalPrice ? (
+            <>
+              <span className="text-lg font-bold text-gray-900">
+                ${product.price.toLocaleString()}
+              </span>
+              <span className="text-sm text-gray-500 line-through">
+                ${product.originalPrice.toLocaleString()}
+              </span>
+            </>
+          ) : (
+            <span className="text-lg font-bold text-gray-900">
+              ${product.price.toLocaleString()}
+            </span>
+          )}
+        </div>
+        
+        {/* Colors */}
+        <div className="flex items-center space-x-2">
+          <span className="text-xs text-gray-500">{product.colors.length} colors</span>
+          <div className="flex space-x-1">
+            {product.colors.slice(0, 4).map((color, index) => (
+              <div
+                key={index}
+                className={`w-4 h-4 rounded-full border border-gray-200 ${
+                  color.toLowerCase() === 'black' ? 'bg-black' :
+                  color.toLowerCase() === 'white' ? 'bg-white' :
+                  color.toLowerCase() === 'navy' ? 'bg-blue-900' :
+                  color.toLowerCase() === 'brown' ? 'bg-amber-800' :
+                  'bg-gray-400'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+        
+        <p className="text-xs text-gray-500">Crafted in {product.craftedIn}</p>
+      </div>
+    </motion.div>
+  )
+}
