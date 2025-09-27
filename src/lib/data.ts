@@ -35,7 +35,7 @@ export const brands: Brand[] = [
     id: 'dolce-gabbana',
     name: 'Dolce & Gabbana',
     description: 'İtalyan kültürü ve işçiliğini kutlayan Sicilya lüks modası',
-    logo: '/brands/DG.png',
+    logo: '/brands/dolce-gabbana.png',
     heritage: 'Celebrating Sicilian culture through luxury fashion since 1985.',
     founded: 1985,
     country: 'Italy',
