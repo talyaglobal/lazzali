@@ -9,13 +9,14 @@ import { brands, products } from '@/lib/data'
 import { motion } from 'framer-motion'
 
 interface BrandPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
-export default function BrandPage({ params }: BrandPageProps) {
-  const brand = brands.find(b => b.id === params.slug)
+export default async function BrandPage({ params }: BrandPageProps) {
+  const { slug } = await params
+  const brand = brands.find(b => b.id === slug)
   
   if (!brand) {
     notFound()
@@ -41,10 +42,14 @@ export default function BrandPage({ params }: BrandPageProps) {
               >
                 {/* Brand Logo */}
                 <div className="mb-8">
-                  <div className="w-32 h-32 mx-auto bg-white rounded-lg flex items-center justify-center">
-                    <span className="text-4xl font-bold text-gray-800">
-                      {brand.name.charAt(0)}
-                    </span>
+                  <div className="w-32 h-32 mx-auto bg-white rounded-lg flex items-center justify-center p-4">
+                    <Image
+                      src={brand.logo}
+                      alt={`${brand.name} logo`}
+                      width={96}
+                      height={96}
+                      className="object-contain"
+                    />
                   </div>
                 </div>
                 

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
 import { brands } from '@/lib/data'
 
 export default function BrandCarousel() {
@@ -19,31 +20,35 @@ export default function BrandCarousel() {
           className="text-center mb-16"
         >
           <h2 className="font-luxury-serif text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Heritage Brands
+            Köklü Markalar
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover collections from the world's most prestigious fashion houses, 
-            each with decades of uncompromising craftsmanship and luxury.
+            Onlarca yıllık ödünsüz işçilik ve lüks geleneğine sahip dünyanın en prestijli 
+            moda evlerinden özenle seçilmiş koleksiyonları keşfedin.
           </p>
         </motion.div>
         
         {/* Brand Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {ultraLuxuryBrands.map((brand, index) => (
-            <motion.div
-              key={brand.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="brand-card"
-            >
+            <Link href={`/brands/${brand.id}`} key={brand.id}>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="brand-card cursor-pointer hover:shadow-lg transition-shadow duration-300"
+              >
               <div className="aspect-square bg-gray-50 rounded-lg p-8 flex items-center justify-center mb-6">
                 <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-luxury-black rounded-full flex items-center justify-center">
-                    <span className="text-white font-luxury-serif font-bold text-2xl">
-                      {brand.name.charAt(0)}
-                    </span>
+                  <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-lg flex items-center justify-center p-2">
+                    <Image
+                      src={brand.logo}
+                      alt={`${brand.name} logo`}
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
                   </div>
                   <h3 className="font-luxury-serif text-2xl font-bold text-gray-900">
                     {brand.name}
@@ -53,18 +58,19 @@ export default function BrandCarousel() {
               
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Est.</span>
+                  <span className="text-gray-500">Kuruluş</span>
                   <span className="font-medium">{brand.founded}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Origin</span>
+                  <span className="text-gray-500">Menşei</span>
                   <span className="font-medium">{brand.country}</span>
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">
                   {brand.description}
                 </p>
               </div>
-            </motion.div>
+              </motion.div>
+            </Link>
           ))}
         </div>
         
@@ -76,9 +82,9 @@ export default function BrandCarousel() {
           viewport={{ once: true }}
           className="text-center mt-16"
         >
-          <button className="luxury-button-outline">
-            View All 12 Brands
-          </button>
+          <Link href="/brands" className="luxury-button-outline">
+            Tüm 12 Markayı Görüntüle
+          </Link>
         </motion.div>
       </div>
     </section>

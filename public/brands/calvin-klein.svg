@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100" viewBox="0 0 200 100">
+  <rect width="200" height="100" fill="white"/>
+  <text x="100" y="55" font-family="sans-serif" font-size="24" font-weight="100" text-anchor="middle" fill="black">CK</text>
+  <text x="100" y="75" font-family="sans-serif" font-size="10" text-anchor="middle" fill="black">CALVIN KLEIN</text>
+</svg>

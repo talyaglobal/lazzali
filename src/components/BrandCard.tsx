@@ -20,13 +20,13 @@ export default function BrandCard({ brand }: BrandCardProps) {
         <div className="aspect-video bg-gray-50 relative overflow-hidden flex items-center justify-center p-8">
           <div className="w-full h-full relative">
             <Image
-              src={`/brands/${brand.id}.png`}
+              src={brand.logo}
               alt={`${brand.name} logo`}
               fill
               className="object-contain"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
-                const fallback = e.currentTarget.parentElement?.querySelector('.fallback-logo');
+                const fallback = e.currentTarget.parentElement?.querySelector('.fallback-logo') as HTMLElement;
                 if (fallback) fallback.style.display = 'flex';
               }}
             />
