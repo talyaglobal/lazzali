@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Heart, Eye } from 'lucide-react'
 import { Product } from '@/types'
 import { useStore } from '@/lib/store'
@@ -14,7 +15,9 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useStore()
   
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault() // Prevent navigation to product page
+    e.stopPropagation()
     addToCart({
       id: `${product.id}-${product.sizes[0]}-${product.colors[0]}`,
       productId: product.id,
@@ -28,13 +31,14 @@ export default function ProductCard({ product }: ProductCardProps) {
   }
   
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      viewport={{ once: true }}
-      className="product-card"
-    >
+    <Link href={`/products/${product.id}`} className="block">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+        className="product-card group"
+      >
       {/* Product Image */}
       <div className="relative aspect-[4/5] overflow-hidden">
         <Image
@@ -126,7 +130,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-center space-x-2">
           <span className="text-xs text-gray-500">{product.colors.length} renk</span>
           <div className="flex space-x-1">
-            {product.colors.slice(0, 4).map((color, index) => (
+            {product.colors.slice(0, 4).map((color: string, index: number) => (
               <div
                 key={index}
                 className={`w-4 h-4 rounded-full border border-gray-200 ${
@@ -143,6 +147,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         
         <p className="text-xs text-gray-500">{product.craftedIn} yapımı</p>
       </div>
-    </motion.div>
+      </motion.div>
+    </Link>
   )
 }

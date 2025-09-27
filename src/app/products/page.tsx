@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import BackButton from '@/components/BackButton'
 import ProductCard from '@/components/ProductCard'
 import { products, brands, categories } from '@/lib/data'
 import { useTranslation } from '@/lib/i18n'
@@ -42,6 +43,7 @@ function ProductsContent() {
   return (
     <div className="min-h-screen bg-luxury-platinum">
       <Header />
+      <BackButton />
       
       <main className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">

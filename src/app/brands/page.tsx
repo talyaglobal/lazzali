@@ -2,6 +2,7 @@
 
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import BackButton from '@/components/BackButton'
 import BrandCard from '@/components/BrandCard'
 import { brands } from '@/lib/data'
 import { useTranslation } from '@/lib/i18n'
@@ -16,6 +17,7 @@ export default function BrandsPage() {
   return (
     <div className="min-h-screen bg-luxury-platinum">
       <Header />
+      <BackButton />
       
       <main className="container mx-auto px-4 py-12">
         {/* Hero Section */}
