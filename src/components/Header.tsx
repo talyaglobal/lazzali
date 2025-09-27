@@ -40,7 +40,7 @@ export default function Header() {
           <Link href="/" className="flex-shrink-0">
             <div className="flex items-center space-x-3">
               <Image
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="Lazzali Logo"
                 width={40}
                 height={40}
