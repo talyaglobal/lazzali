@@ -39,15 +39,15 @@ export default function BrandCarousel() {
                 viewport={{ once: true }}
                 className="brand-card cursor-pointer hover:shadow-lg transition-shadow duration-300"
               >
-              <div className="aspect-square bg-gray-50 rounded-lg p-8 flex items-center justify-center mb-6">
+              <div className="aspect-square bg-gray-50 rounded-lg p-6 flex items-center justify-center mb-6">
                 <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-lg flex items-center justify-center p-2">
+                  <div className="w-32 h-32 mx-auto mb-4 bg-white rounded-lg flex items-center justify-center p-4">
                     <Image
                       src={brand.logo}
                       alt={`${brand.name} logo`}
-                      width={48}
-                      height={48}
-                      className="object-contain"
+                      width={96}
+                      height={96}
+                      className="object-contain scale-110"
                     />
                   </div>
                   <h3 className="font-luxury-serif text-2xl font-bold text-gray-900">

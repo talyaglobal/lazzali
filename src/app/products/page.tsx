@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
@@ -8,12 +9,26 @@ import { products, brands, categories } from '@/lib/data'
 import { useTranslation } from '@/lib/i18n'
 import { Filter, Grid, List } from 'lucide-react'
 
-export default function ProductsPage() {
+function ProductsContent() {
   const { t } = useTranslation()
+  const searchParams = useSearchParams()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedBrand, setSelectedBrand] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [sortBy, setSortBy] = useState<string>('name')
+
+  // Handle URL parameters
+  useEffect(() => {
+    const category = searchParams.get('category')
+    const brand = searchParams.get('brand')
+    const sort = searchParams.get('sort')
+    const view = searchParams.get('view')
+    
+    if (category) setSelectedCategory(category)
+    if (brand) setSelectedBrand(brand)
+    if (sort) setSortBy(sort)
+    if (view === 'list' || view === 'grid') setViewMode(view)
+  }, [searchParams])
 
   const filteredProducts = products
     .filter(product => !selectedBrand || product.brandId === selectedBrand)
@@ -117,5 +132,13 @@ export default function ProductsPage() {
 
       <Footer />
     </div>
+  )
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductsContent />
+    </Suspense>
   )
 }

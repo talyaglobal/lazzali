@@ -42,12 +42,12 @@ export default async function BrandPage({ params }: BrandPageProps) {
               >
                 {/* Brand Logo */}
                 <div className="mb-8">
-                  <div className="w-32 h-32 mx-auto bg-white rounded-lg flex items-center justify-center p-4">
+                  <div className="w-40 h-40 mx-auto bg-white rounded-lg flex items-center justify-center p-6">
                     <Image
                       src={brand.logo}
                       alt={`${brand.name} logo`}
-                      width={96}
-                      height={96}
+                      width={120}
+                      height={120}
                       className="object-contain"
                     />
                   </div>

@@ -17,13 +17,13 @@ export default function BrandCard({ brand }: BrandCardProps) {
         whileHover={{ y: -8 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="aspect-video bg-gray-50 relative overflow-hidden flex items-center justify-center p-8">
+        <div className="aspect-video bg-gray-50 relative overflow-hidden flex items-center justify-center p-4">
           <div className="w-full h-full relative">
             <Image
               src={brand.logo}
               alt={`${brand.name} logo`}
               fill
-              className="object-contain"
+              className="object-contain scale-110"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 const fallback = e.currentTarget.parentElement?.querySelector('.fallback-logo') as HTMLElement;

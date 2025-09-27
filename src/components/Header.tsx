@@ -75,6 +75,7 @@ export default function Header() {
             <Link href="/products?category=clothing" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('clothing')}</Link>
             <Link href="/products?category=footwear" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('footwear')}</Link>
             <Link href="/products?category=accessories" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('accessories')}</Link>
+            <Link href="/products?category=home-textiles" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">Ev Tekstili</Link>
             <Link href="/products?sale=true" className="font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('sale')}</Link>
           </nav>
           
@@ -155,6 +156,7 @@ export default function Header() {
             <Link href="/products?category=clothing" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('clothing')}</Link>
             <Link href="/products?category=footwear" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('footwear')}</Link>
             <Link href="/products?category=accessories" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('accessories')}</Link>
+            <Link href="/products?category=home-textiles" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">Ev Tekstili</Link>
             <Link href="/products?sale=true" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('sale')}</Link>
             <div className="pt-4 border-t border-gray-200">
               <Link href="/account" className="flex items-center space-x-3 text-gray-700 hover:text-luxury-gold transition-colors">
