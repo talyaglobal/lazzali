@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Heart, Eye } from 'lucide-react'
 import { Product } from '@/types'
 import { useStore } from '@/lib/store'
+import { formatPriceWithoutSymbol } from '@/lib/utils'
 
 interface ProductCardProps {
   product: Product
@@ -47,17 +48,17 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="absolute top-4 left-4 space-y-2">
           {product.isNew && (
             <span className="bg-luxury-gold text-white text-xs font-medium px-3 py-1 rounded-full">
-              NEW
+              YENİ
             </span>
           )}
           {product.isLimitedEdition && (
             <span className="bg-red-500 text-white text-xs font-medium px-3 py-1 rounded-full">
-              LIMITED
+              SINIRLI
             </span>
           )}
           {product.originalPrice && (
             <span className="bg-green-500 text-white text-xs font-medium px-3 py-1 rounded-full">
-              SALE
+              İNDİRİM
             </span>
           )}
         </div>
@@ -88,7 +89,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             whileTap={{ scale: 0.98 }}
             className="w-full bg-luxury-black text-white py-3 font-medium text-sm tracking-wide uppercase hover:bg-luxury-charcoal transition-colors"
           >
-            Quick Add
+            Hızlı Ekle
           </motion.button>
         </div>
       </div>
@@ -108,22 +109,22 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.originalPrice ? (
             <>
               <span className="text-lg font-bold text-gray-900">
-                ${product.price.toLocaleString()}
+                {formatPriceWithoutSymbol(product.price)}
               </span>
               <span className="text-sm text-gray-500 line-through">
-                ${product.originalPrice.toLocaleString()}
+                {formatPriceWithoutSymbol(product.originalPrice)}
               </span>
             </>
           ) : (
             <span className="text-lg font-bold text-gray-900">
-              ${product.price.toLocaleString()}
+              {formatPriceWithoutSymbol(product.price)}
             </span>
           )}
         </div>
         
         {/* Colors */}
         <div className="flex items-center space-x-2">
-          <span className="text-xs text-gray-500">{product.colors.length} colors</span>
+          <span className="text-xs text-gray-500">{product.colors.length} renk</span>
           <div className="flex space-x-1">
             {product.colors.slice(0, 4).map((color, index) => (
               <div
@@ -140,7 +141,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
         
-        <p className="text-xs text-gray-500">Crafted in {product.craftedIn}</p>
+        <p className="text-xs text-gray-500">{product.craftedIn} yapımı</p>
       </div>
     </motion.div>
   )

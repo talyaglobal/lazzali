@@ -22,14 +22,14 @@ export default function FeaturedProducts() {
           <div className="flex items-center justify-between mb-12">
             <div>
               <h2 className="font-luxury-serif text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                New Arrivals
+                Yeni Gelenler
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl">
-                The latest additions to our curated collection of luxury menswear
+                Özenle seçilmiş erkek lüks modası koleksiyonumuza en son eklenen ürünler
               </p>
             </div>
             <button className="luxury-button-outline hidden md:block">
-              View All New
+              Tümünü Görüntüle
             </button>
           </div>
           

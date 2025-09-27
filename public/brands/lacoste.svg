@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100" viewBox="0 0 200 100">
-  <rect width="200" height="100" fill="white"/>
-  <path d="M80 30 L120 30 L120 45 L105 60 L95 60 L80 45 Z" fill="#00a651"/>
-  <text x="100" y="80" font-family="serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#00a651">LACOSTE</text>
-</svg>

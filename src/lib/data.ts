@@ -4,7 +4,7 @@ export const brands: Brand[] = [
   {
     id: 'prada',
     name: 'Prada',
-    description: 'Italian luxury fashion house known for innovative materials and progressive designs',
+    description: 'Yenilikçi malzemeler ve ilerici tasarımlarıyla tanınan İtalyan lüks moda evi',
     logo: '/brands/prada.svg',
     heritage: 'Founded in Milan, Prada has been synonymous with luxury and innovation since 1913.',
     founded: 1913,
@@ -14,7 +14,7 @@ export const brands: Brand[] = [
   {
     id: 'moncler',
     name: 'Moncler',
-    description: 'Premium outerwear combining Alpine heritage with contemporary luxury',
+    description: 'Alp geleneğini çağdaş lüksle birleştiren premium dış giyim markası',
     logo: '/brands/moncler.svg',
     heritage: 'Born in the French Alps, Moncler creates exceptional outerwear for urban explorers.',
     founded: 1952,
@@ -24,7 +24,7 @@ export const brands: Brand[] = [
   {
     id: 'burberry',
     name: 'Burberry',
-    description: 'British luxury fashion house famous for iconic trench coats and heritage patterns',
+    description: 'Ikonik trench coat ve miras desenleriyle ünlü İngiliz lüks moda evi',
     logo: '/brands/burberry.svg',
     heritage: 'A British icon since 1856, defining timeless elegance and innovative craftsmanship.',
     founded: 1856,
@@ -34,7 +34,7 @@ export const brands: Brand[] = [
   {
     id: 'dolce-gabbana',
     name: 'Dolce & Gabbana',
-    description: 'Sicilian luxury fashion celebrating Italian culture and craftsmanship',
+    description: 'İtalyan kültürü ve işçiliğini kutlayan Sicilya lüks modası',
     logo: '/brands/dolce-gabbana.svg',
     heritage: 'Celebrating Sicilian culture through luxury fashion since 1985.',
     founded: 1985,
@@ -44,7 +44,7 @@ export const brands: Brand[] = [
   {
     id: 'stone-island',
     name: 'Stone Island',
-    description: 'Italian sportswear brand renowned for technical innovation and fabric research',
+    description: 'Teknik inovasyon ve kumaş araştırmasıyla ünlü İtalyan spor giyim markası',
     logo: '/brands/stone-island.svg',
     heritage: 'Pioneering technical clothing with innovative materials since 1982.',
     founded: 1982,
@@ -54,7 +54,7 @@ export const brands: Brand[] = [
   {
     id: 'tommy-hilfiger',
     name: 'Tommy Hilfiger',
-    description: 'American premium lifestyle brand with preppy sophistication',
+    description: 'Preppy sofistikasyona sahip Amerikan premium yaşam tarzı markası',
     logo: '/brands/tommy-hilfiger.svg',
     heritage: 'Defining American cool with preppy elegance since 1985.',
     founded: 1985,
@@ -64,7 +64,7 @@ export const brands: Brand[] = [
   {
     id: 'calvin-klein',
     name: 'Calvin Klein',
-    description: 'Minimalist American luxury with clean lines and modern aesthetics',
+    description: 'Temiz çizgiler ve modern estetikle minimalist Amerikan lüksü',
     logo: '/brands/calvin-klein.svg',
     heritage: 'Pioneering minimalist luxury since 1968.',
     founded: 1968,
@@ -74,7 +74,7 @@ export const brands: Brand[] = [
   {
     id: 'lacoste',
     name: 'Lacoste',
-    description: 'French elegance with tennis heritage and timeless polo shirts',
+    description: 'Tenis mirası ve zamansız polo gömlekleriyle Fransız zarafeti',
     logo: '/brands/lacoste.svg',
     heritage: 'Tennis elegance and French sophistication since 1933.',
     founded: 1933,
@@ -84,7 +84,7 @@ export const brands: Brand[] = [
   {
     id: 'nike',
     name: 'Nike',
-    description: 'Athletic luxury with premium lifestyle collections',
+    description: 'Premium yaşam tarzı koleksiyonlarıyla atletik lüks',
     logo: '/brands/nike.svg',
     heritage: 'Just Do It - Innovation and athletic excellence since 1971.',
     founded: 1971,
@@ -94,7 +94,7 @@ export const brands: Brand[] = [
   {
     id: 'adidas',
     name: 'Adidas',
-    description: 'German engineering meets street luxury and performance',
+    description: 'Alman mühendisliği sokak lüksü ve performansla buluşuyor',
     logo: '/brands/adidas.svg',
     heritage: 'The three stripes of excellence since 1949.',
     founded: 1949,
@@ -104,7 +104,7 @@ export const brands: Brand[] = [
   {
     id: 'timberland',
     name: 'Timberland',
-    description: 'Outdoor heritage with premium craftsmanship and sustainability',
+    description: 'Premium işçilik ve sürdürülebilirlikle outdoor mirası',
     logo: '/brands/timberland.svg',
     heritage: 'Built for the outdoors, crafted to last since 1973.',
     founded: 1973,
@@ -114,7 +114,7 @@ export const brands: Brand[] = [
   {
     id: 'columbia',
     name: 'Columbia',
-    description: 'Technical outdoor wear with luxury positioning and innovation',
+    description: 'Lüks konumlandırma ve inovasyonla teknik outdoor giyim',
     logo: '/brands/columbia.svg',
     heritage: 'Pacific Northwest outdoor innovation since 1938.',
     founded: 1938,
