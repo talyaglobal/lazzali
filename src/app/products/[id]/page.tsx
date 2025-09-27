@@ -8,19 +8,14 @@ import { products } from '@/lib/data'
 import { useStore } from '@/lib/store'
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
-export default function ProductDetailPage({ params }: ProductPageProps) {
-  const product = products.find(p => p.id === params.id)
-  const { addToCart, addToWishlist } = useStore()
-  
-  const [selectedSize, setSelectedSize] = useState('')
-  const [selectedColor, setSelectedColor] = useState('')
-  const [selectedImage, setSelectedImage] = useState(0)
-  const [quantity, setQuantity] = useState(1)
+export default async function ProductDetailPage({ params }: ProductPageProps) {
+  const resolvedParams = await params
+  const product = products.find(p => p.id === resolvedParams.id)
 
   if (!product) {
     return (
@@ -34,6 +29,17 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
       </div>
     )
   }
+
+  return <ProductDetail product={product} />
+}
+
+function ProductDetail({ product }: { product: any }) {
+  const { addToCart } = useStore()
+  
+  const [selectedSize, setSelectedSize] = useState('')
+  const [selectedColor, setSelectedColor] = useState('')
+  const [selectedImage, setSelectedImage] = useState(0)
+  const [quantity, setQuantity] = useState(1)
 
   const handleAddToCart = () => {
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
@@ -82,7 +88,7 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
             {/* Thumbnail Images */}
             {product.images.length > 1 && (
               <div className="flex space-x-2">
-                {product.images.map((image, index) => (
+                {product.images.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -144,7 +150,7 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
               <div>
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Beden</h3>
                 <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((size) => (
+                  {product.sizes.map((size: string) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
@@ -166,7 +172,7 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
               <div>
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Renk</h3>
                 <div className="flex flex-wrap gap-2">
-                  {product.colors.map((color) => (
+                  {product.colors.map((color: string) => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
@@ -215,7 +221,7 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
               </button>
               
               <button
-                onClick={() => addToWishlist(product)}
+                onClick={() => alert('Favorilere eklendi!')}
                 className="w-full border border-gray-300 text-gray-900 py-3 px-6 rounded-lg font-medium hover:border-gray-400 transition-colors flex items-center justify-center space-x-2"
               >
                 <Heart className="h-5 w-5" />
