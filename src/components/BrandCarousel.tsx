@@ -9,7 +9,7 @@ export default function BrandCarousel() {
   const ultraLuxuryBrands = brands.filter(brand => brand.category === 'ultra-luxury')
   
   return (
-    <section className="py-20 bg-white">
+    <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -29,7 +29,7 @@ export default function BrandCarousel() {
         </motion.div>
         
         {/* Brand Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
           {ultraLuxuryBrands.map((brand, index) => (
             <Link href={`/brands/${brand.id}`} key={brand.id}>
               <motion.div
@@ -37,20 +37,20 @@ export default function BrandCarousel() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="brand-card cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                className="brand-card cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
-              <div className="aspect-square bg-gray-50 rounded-lg p-6 flex items-center justify-center mb-6">
+              <div className="aspect-square bg-gray-50 rounded-lg p-8 flex items-center justify-center mb-8">
                 <div className="text-center">
-                  <div className="w-32 h-32 mx-auto mb-4 bg-white rounded-lg flex items-center justify-center p-4">
+                  <div className="w-48 h-48 mx-auto mb-6 bg-white rounded-lg flex items-center justify-center p-6">
                     <Image
                       src={brand.logo}
                       alt={`${brand.name} logo`}
-                      width={96}
-                      height={96}
-                      className="object-contain scale-110"
+                      width={160}
+                      height={160}
+                      className="object-contain scale-125"
                     />
                   </div>
-                  <h3 className="font-luxury-serif text-2xl font-bold text-gray-900">
+                  <h3 className="font-luxury-serif text-3xl font-bold text-gray-900">
                     {brand.name}
                   </h3>
                 </div>

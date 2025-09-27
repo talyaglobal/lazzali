@@ -21,7 +21,9 @@ import {
   Send,
   Facebook,
   MessageCircle,
-  Instagram
+  Instagram,
+  Archive,
+  LogOut
 } from 'lucide-react'
 import { products, brands } from '@/lib/data'
 import ImportExportButtons from '@/components/ImportExportButtons'
@@ -55,6 +57,8 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<NewProduct | null>(null)
   const [productsList, setProductsList] = useState(products)
   const [showAddMember, setShowAddMember] = useState(false)
+  const [selectedBrandFilter, setSelectedBrandFilter] = useState<string>('')
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('')
   
   const [newProduct, setNewProduct] = useState<NewProduct>({
     id: '',
@@ -108,7 +112,7 @@ export default function AdminDashboard() {
       region: 'İstanbul',
       joinDate: '2024-03-15',
       lastPurchase: '2025-01-20',
-      commission: 12,
+      discount: 12,
       status: 'Active'
     },
     {
@@ -123,7 +127,7 @@ export default function AdminDashboard() {
       region: 'Ankara',
       joinDate: '2024-07-22',
       lastPurchase: '2025-01-18',
-      commission: 8,
+      discount: 8,
       status: 'Active'
     },
     {
@@ -138,7 +142,7 @@ export default function AdminDashboard() {
       region: 'İzmir',
       joinDate: '2024-11-10',
       lastPurchase: '2025-01-15',
-      commission: 5,
+      discount: 5,
       status: 'Active'
     }
   ])
@@ -150,7 +154,27 @@ export default function AdminDashboard() {
     tier: 'Bronze',
     dealerType: 'Local Dealer', 
     region: '',
-    commission: 5
+    discount: 5
+  })
+
+  // New Campaign State
+  const [newCampaign, setNewCampaign] = useState({
+    title: '',
+    description: '',
+    discount: '',
+    validUntil: '',
+    image: '',
+    category: '',
+    active: true
+  })
+
+  // New Social Post State
+  const [newSocialPost, setNewSocialPost] = useState({
+    content: '',
+    platform: 'Instagram',
+    image: '',
+    hashtags: '',
+    scheduledDate: ''
   })
 
   // Campaign Management Data
@@ -223,6 +247,97 @@ export default function AdminDashboard() {
 
   const [showAddCampaign, setShowAddCampaign] = useState(false)
   const [showCreatePost, setShowCreatePost] = useState(false)
+  const [showAddUser, setShowAddUser] = useState(false)
+
+  // User Management Data
+  const [users, setUsers] = useState([
+    {
+      id: 'user001',
+      name: 'Ahmet Yılmaz',
+      email: 'ahmet@example.com',
+      phone: '+90 532 123 45 67',
+      type: 'Regular',
+      status: 'Active',
+      joinDate: '2024-01-15',
+      lastLogin: '2025-01-26',
+      totalOrders: 12,
+      totalSpent: 8750,
+      city: 'İstanbul',
+      birthDate: '1985-06-15'
+    },
+    {
+      id: 'user002', 
+      name: 'Mehmet Kaya',
+      email: 'mehmet@example.com',
+      phone: '+90 533 987 65 43',
+      type: 'VIP',
+      status: 'Active',
+      joinDate: '2023-08-20',
+      lastLogin: '2025-01-27',
+      totalOrders: 28,
+      totalSpent: 24500,
+      city: 'Ankara',
+      birthDate: '1990-03-22'
+    },
+    {
+      id: 'user003',
+      name: 'Ali Demir',
+      email: 'ali@example.com', 
+      phone: '+90 534 456 78 90',
+      type: 'Premium',
+      status: 'Active',
+      joinDate: '2024-03-10',
+      lastLogin: '2025-01-25',
+      totalOrders: 8,
+      totalSpent: 5200,
+      city: 'İzmir',
+      birthDate: '1988-11-05'
+    },
+    {
+      id: 'user004',
+      name: 'Fatih Özkan',
+      email: 'fatih@example.com',
+      phone: '+90 535 321 09 87',
+      type: 'Regular',
+      status: 'Inactive',
+      joinDate: '2024-06-25',
+      lastLogin: '2024-12-15',
+      totalOrders: 3,
+      totalSpent: 1850,
+      city: 'Bursa',
+      birthDate: '1992-09-18'
+    },
+    {
+      id: 'user005',
+      name: 'Emre Kızıltan',
+      email: 'emre@example.com',
+      phone: '+90 536 654 32 10',
+      type: 'VIP',
+      status: 'Active',
+      joinDate: '2023-05-12',
+      lastLogin: '2025-01-27',
+      totalOrders: 45,
+      totalSpent: 67800,
+      city: 'İstanbul',
+      birthDate: '1987-12-03'
+    }
+  ])
+
+  // Filtered products for display
+  const filteredProducts = productsList.filter(product => {
+    const brandMatch = !selectedBrandFilter || product.brandId === selectedBrandFilter
+    const categoryMatch = !selectedCategoryFilter || product.category === selectedCategoryFilter
+    return brandMatch && categoryMatch
+  })
+
+  // Get unique categories from products
+  const productCategories = [
+    { id: 'clothing', name: 'Giyim' },
+    { id: 'footwear', name: 'Ayakkabı' },
+    { id: 'outerwear', name: 'Dış Giyim' },
+    { id: 'accessories', name: 'Aksesuar' },
+    { id: 'home-textiles', name: 'Ev Tekstili' }
+  ]
 
   const handleAddProduct = () => {
     if (!newProduct.name || !newProduct.brand || !newProduct.price) {
@@ -323,6 +438,16 @@ export default function AdminDashboard() {
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">Admin User</span>
               <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+              <button
+                onClick={() => {
+                  // Sign out functionality - redirect to login or home page
+                  window.location.href = '/'
+                }}
+                className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 text-sm flex items-center space-x-1"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Çıkış Yap</span>
+              </button>
             </div>
           </div>
         </div>
@@ -370,6 +495,19 @@ export default function AdminDashboard() {
                 >
                   <ShoppingBag className="h-5 w-5" />
                   <span>Siparişler</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('stock')}
+                  className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === 'stock' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Archive className="h-5 w-5" />
+                  <span>Stok Yönetimi</span>
                 </button>
               </li>
               <li>
@@ -422,6 +560,19 @@ export default function AdminDashboard() {
                 >
                   <Send className="h-5 w-5" />
                   <span>Sosyal Medya</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('integrations')}
+                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                    activeTab === 'integrations' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Archive className="h-5 w-5" />
+                  <span>İntegrasyonlar</span>
                 </button>
               </li>
             </ul>
@@ -641,8 +792,177 @@ export default function AdminDashboard() {
                   entityName="sipariş"
                 />
               </div>
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <p className="text-gray-600">Sipariş yönetimi sayfası geliştiriliyor...</p>
+
+              {/* Order Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Toplam Sipariş</p>
+                      <p className="text-2xl font-bold text-gray-900">{stats.totalOrders}</p>
+                    </div>
+                    <ShoppingBag className="h-8 w-8 text-blue-600" />
+                  </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Bugünkü Siparişler</p>
+                      <p className="text-2xl font-bold text-gray-900">{stats.todayOrders}</p>
+                    </div>
+                    <TrendingUp className="h-8 w-8 text-green-600" />
+                  </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Bekleyen Siparişler</p>
+                      <p className="text-2xl font-bold text-gray-900">{recentOrders.filter(o => o.status === 'Beklemede').length}</p>
+                    </div>
+                    <Package className="h-8 w-8 text-orange-600" />
+                  </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Bugünkü Ciro</p>
+                      <p className="text-2xl font-bold text-gray-900">{stats.todayRevenue.toLocaleString('tr-TR')} TL</p>
+                    </div>
+                    <DollarSign className="h-8 w-8 text-amber-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Status Filter */}
+              <div className="mb-6">
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-sm font-medium text-gray-600 mr-2">Durum:</span>
+                  {['Tümü', 'Beklemede', 'Kargo', 'Tamamlandı'].map(status => (
+                    <button
+                      key={status}
+                      className="px-4 py-2 text-sm rounded-full border transition-colors bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200"
+                    >
+                      {status} ({status === 'Tümü' ? recentOrders.length : recentOrders.filter(o => o.status === status).length})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Orders Table */}
+              <div className="bg-white rounded-lg shadow-sm">
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900">Son Siparişler</h3>
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Sipariş ara..."
+                          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sipariş ID</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Müşteri</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tutar</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {recentOrders.map(order => (
+                        <tr key={order.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            #{order.id}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-10 w-10">
+                                <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                  <Users className="h-5 w-5 text-gray-600" />
+                                </div>
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">{order.customer}</div>
+                                <div className="text-sm text-gray-500">Müşteri</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {order.amount.toLocaleString('tr-TR')} TL
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              order.status === 'Tamamlandı' ? 'bg-green-100 text-green-800' :
+                              order.status === 'Kargo' ? 'bg-blue-100 text-blue-800' :
+                              order.status === 'Beklemede' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {order.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {order.date}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex items-center space-x-2">
+                              <button className="text-blue-600 hover:text-blue-900">
+                                <Eye className="h-4 w-4" />
+                              </button>
+                              <button className="text-green-600 hover:text-green-900">
+                                <Edit className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                <div className="bg-white px-6 py-3 border-t border-gray-200 flex items-center justify-between">
+                  <div className="flex-1 flex justify-between sm:hidden">
+                    <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                      Önceki
+                    </button>
+                    <button className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                      Sonraki
+                    </button>
+                  </div>
+                  <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm text-gray-700">
+                        <span className="font-medium">1</span> - <span className="font-medium">{recentOrders.length}</span> arası, toplam <span className="font-medium">{recentOrders.length}</span> sonuç
+                      </p>
+                    </div>
+                    <div>
+                      <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                        <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                          Önceki
+                        </button>
+                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-green-50 text-sm font-medium text-green-600">
+                          1
+                        </button>
+                        <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                          Sonraki
+                        </button>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -651,14 +971,201 @@ export default function AdminDashboard() {
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Kullanıcı Yönetimi</h2>
-                <ImportExportButtons
-                  data={[{ id: 1, name: 'Ahmet Yılmaz', email: 'ahmet@example.com', type: 'VIP' }]}
-                  filename="users"
-                  entityName="kullanıcı"
-                />
+                <div className="flex space-x-3">
+                  <ImportExportButtons
+                    data={users}
+                    filename="users"
+                    entityName="kullanıcı"
+                  />
+                  <button
+                    onClick={() => setShowAddUser(true)}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Yeni Kullanıcı</span>
+                  </button>
+                </div>
               </div>
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <p className="text-gray-600">Kullanıcı yönetimi sayfası geliştiriliyor...</p>
+
+              {/* User Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Toplam Kullanıcı</p>
+                      <p className="text-2xl font-bold text-gray-900">{users.length}</p>
+                    </div>
+                    <Users className="h-8 w-8 text-blue-600" />
+                  </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Aktif Kullanıcılar</p>
+                      <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.status === 'Active').length}</p>
+                    </div>
+                    <Users className="h-8 w-8 text-green-600" />
+                  </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">VIP Kullanıcılar</p>
+                      <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.type === 'VIP').length}</p>
+                    </div>
+                    <Crown className="h-8 w-8 text-amber-600" />
+                  </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Toplam Harcama</p>
+                      <p className="text-2xl font-bold text-gray-900">{users.reduce((sum, u) => sum + u.totalSpent, 0).toLocaleString('tr-TR')} TL</p>
+                    </div>
+                    <DollarSign className="h-8 w-8 text-purple-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* User Filters */}
+              <div className="mb-6">
+                <div className="flex flex-wrap gap-4 mb-4">
+                  {/* User Type Filter */}
+                  <div className="flex flex-wrap gap-2">
+                    <span className="text-sm font-medium text-gray-600 mr-2">Kullanıcı Tipi:</span>
+                    {['Tümü', 'Regular', 'Premium', 'VIP'].map(type => (
+                      <button
+                        key={type}
+                        className="px-3 py-1 text-xs rounded-full border transition-colors bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200"
+                      >
+                        {type} ({type === 'Tümü' ? users.length : users.filter(u => u.type === type).length})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  {/* Status Filter */}
+                  <span className="text-sm font-medium text-gray-600 mr-2">Durum:</span>
+                  {['Tümü', 'Active', 'Inactive'].map(status => (
+                    <button
+                      key={status}
+                      className="px-3 py-1 text-xs rounded-full border transition-colors bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200"
+                    >
+                      {status === 'Active' ? 'Aktif' : status === 'Inactive' ? 'Pasif' : status} ({status === 'Tümü' ? users.length : users.filter(u => u.status === status).length})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Users Table */}
+              <div className="bg-white rounded-lg shadow-sm">
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900">Kullanıcı Listesi</h3>
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Kullanıcı ara..."
+                          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kullanıcı</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İletişim</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tip</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sipariş</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harcama</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Son Giriş</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {users.map(user => (
+                        <tr key={user.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-10 w-10">
+                                <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                  <Users className="h-5 w-5 text-gray-600" />
+                                </div>
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                <div className="text-sm text-gray-500">{user.city}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{user.email}</div>
+                            <div className="text-sm text-gray-500">{user.phone}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              user.type === 'VIP' ? 'bg-yellow-100 text-yellow-800' :
+                              user.type === 'Premium' ? 'bg-purple-100 text-purple-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {user.type}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {user.totalOrders}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {user.totalSpent.toLocaleString('tr-TR')} TL
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {user.lastLogin}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              user.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }`}>
+                              {user.status === 'Active' ? 'Aktif' : 'Pasif'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex items-center space-x-2">
+                              <button className="text-blue-600 hover:text-blue-900">
+                                <Eye className="h-4 w-4" />
+                              </button>
+                              <button className="text-green-600 hover:text-green-900">
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const newStatus = user.status === 'Active' ? 'Inactive' : 'Active'
+                                  setUsers(users.map(u => 
+                                    u.id === user.id ? { ...u, status: newStatus } : u
+                                  ))
+                                }}
+                                className={`${
+                                  user.status === 'Active' ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'
+                                }`}
+                              >
+                                {user.status === 'Active' ? 'Pasifleştir' : 'Aktifleştir'}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -727,9 +1234,9 @@ export default function AdminDashboard() {
                 <div className="bg-gradient-to-br from-green-400 to-green-600 p-6 rounded-lg text-white">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-green-100">Toplam Komisyon</p>
+                      <p className="text-green-100">Toplam İndirim</p>
                       <p className="text-2xl font-bold">
-                        {vipMembers.reduce((sum, member) => sum + (member.totalSpent * member.commission / 100), 0).toLocaleString('tr-TR')} TL
+                        {vipMembers.reduce((sum, member) => sum + (member.totalSpent * member.discount / 100), 0).toLocaleString('tr-TR')} TL
                       </p>
                     </div>
                     <DollarSign className="h-8 w-8 text-green-200" />
@@ -813,7 +1320,7 @@ export default function AdminDashboard() {
                             {member.totalSpent.toLocaleString('tr-TR')} TL
                           </td>
                           <td className="p-4 text-sm font-medium text-green-600">
-                            %{member.commission}
+                            %{member.discount}
                           </td>
                           <td className="p-4 text-sm text-gray-900">{member.region}</td>
                           <td className="p-4">
@@ -853,8 +1360,8 @@ export default function AdminDashboard() {
                     <h4 className="font-semibold text-gray-900">Diamond</h4>
                   </div>
                   <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• 50,000+ TL harcama</li>
-                    <li>• %12 komisyon</li>
+                    <li>• 100,000+ TL harcama</li>
+                    <li>• %15 kart indirimi</li>
                     <li>• Premium Dealer statüsü</li>
                     <li>• Özel ürün erişimi</li>
                   </ul>
@@ -869,7 +1376,7 @@ export default function AdminDashboard() {
                   </div>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• 25,000+ TL harcama</li>
-                    <li>• %8 komisyon</li>
+                    <li>• %8 kart indirimi</li>
                     <li>• Regional Dealer statüsü</li>
                     <li>• Öncelikli destek</li>
                   </ul>
@@ -884,7 +1391,7 @@ export default function AdminDashboard() {
                   </div>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• 10,000+ TL harcama</li>
-                    <li>• %5 komisyon</li>
+                    <li>• %5 kart indirimi</li>
                     <li>• Local Dealer statüsü</li>
                     <li>• Ücretsiz kargo</li>
                   </ul>
@@ -899,7 +1406,7 @@ export default function AdminDashboard() {
                   </div>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• 0+ TL harcama</li>
-                    <li>• %2 komisyon</li>
+                    <li>• %2 kart indirimi</li>
                     <li>• Temel üye statüsü</li>
                     <li>• Puan biriktirme</li>
                   </ul>
@@ -1019,6 +1526,143 @@ export default function AdminDashboard() {
                           </td>
                         </tr>
                       ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Stock Management Tab */}
+          {activeTab === 'stock' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Stok Yönetimi</h2>
+                <ImportExportButtons
+                  data={productsList}
+                  filename="stock_management"
+                  entityName="stok"
+                />
+              </div>
+
+              {/* Stock Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Toplam Ürün</p>
+                      <p className="text-2xl font-bold text-gray-900">{productsList.length}</p>
+                    </div>
+                    <Package className="h-8 w-8 text-blue-600" />
+                  </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Stokta Var</p>
+                      <p className="text-2xl font-bold text-gray-900">{productsList.filter((p: any) => p.inStock).length}</p>
+                    </div>
+                    <Archive className="h-8 w-8 text-green-600" />
+                  </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Tükenen</p>
+                      <p className="text-2xl font-bold text-gray-900">{productsList.filter((p: any) => !p.inStock).length}</p>
+                    </div>
+                    <Archive className="h-8 w-8 text-red-600" />
+                  </div>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Toplam Değer</p>
+                      <p className="text-2xl font-bold text-gray-900">{(productsList.reduce((acc: any, p: any) => acc + p.price, 0)).toLocaleString('tr-TR')} TL</p>
+                    </div>
+                    <DollarSign className="h-8 w-8 text-amber-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Stock Table */}
+              <div className="bg-white rounded-lg shadow-sm">
+                <div className="p-6 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">Stok Durumu</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ürün</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marka</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alış Fiyatı</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satış Fiyatı</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kar Marjı</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Durumu</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {productsList.map((product: any) => {
+                        const purchasePrice = Math.round(product.price * 0.6) // %40 kar marjı varsayımı
+                        const profitMargin = ((product.price - purchasePrice) / purchasePrice * 100).toFixed(1)
+                        
+                        return (
+                          <tr key={product.id}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="flex-shrink-0 h-10 w-10">
+                                  <div className="h-10 w-10 bg-gray-200 rounded-lg"></div>
+                                </div>
+                                <div className="ml-4">
+                                  <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                                  <div className="text-sm text-gray-500">SKU: {product.id}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.brand}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">{product.category}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{purchasePrice.toLocaleString('tr-TR')} TL</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.price.toLocaleString('tr-TR')} TL</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                parseFloat(profitMargin) >= 50 ? 'bg-green-100 text-green-800' : 
+                                parseFloat(profitMargin) >= 30 ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                              }`}>
+                                %{profitMargin}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                product.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                              }`}>
+                                {product.inStock ? 'Stokta' : 'Tükendi'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <button
+                                onClick={() => {
+                                  const newStatus = !product.inStock
+                                  setProductsList(productsList.map((p: any) => 
+                                    p.id === product.id ? { ...p, inStock: newStatus } : p
+                                  ))
+                                }}
+                                className={`${
+                                  product.inStock ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'
+                                }`}
+                              >
+                                {product.inStock ? 'Stoktan Çıkar' : 'Stoğa Ekle'}
+                              </button>
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -1578,6 +2222,443 @@ export default function AdminDashboard() {
                 <Save className="h-4 w-4" />
                 <span>Güncelle</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Campaign Modal */}
+      {showAddCampaign && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-90vh overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h3 className="text-lg font-semibold">Yeni Kampanya Ekle</h3>
+              <button
+                onClick={() => setShowAddCampaign(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Kampanya Başlığı *</label>
+                  <input
+                    type="text"
+                    value={newCampaign.title}
+                    onChange={(e) => setNewCampaign({...newCampaign, title: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Kampanya başlığı girin"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">İndirim Oranı *</label>
+                  <input
+                    type="text"
+                    value={newCampaign.discount}
+                    onChange={(e) => setNewCampaign({...newCampaign, discount: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="örn: 25%"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Geçerlilik Tarihi *</label>
+                  <input
+                    type="date"
+                    value={newCampaign.validUntil}
+                    onChange={(e) => setNewCampaign({...newCampaign, validUntil: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+                  <select
+                    value={newCampaign.category}
+                    onChange={(e) => setNewCampaign({...newCampaign, category: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="">Kategori seçin</option>
+                    <option value="clothing">Giyim</option>
+                    <option value="footwear">Ayakkabı</option>
+                    <option value="accessories">Aksesuar</option>
+                    <option value="outerwear">Dış Giyim</option>
+                    <option value="luxury">Lüks</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Görsel URL</label>
+                  <input
+                    type="url"
+                    value={newCampaign.image}
+                    onChange={(e) => setNewCampaign({...newCampaign, image: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Kampanya görseli URL'si"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Açıklama</label>
+                <textarea
+                  value={newCampaign.description}
+                  onChange={(e) => setNewCampaign({...newCampaign, description: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Kampanya açıklaması"
+                />
+              </div>
+
+              <div className="flex items-center justify-between mt-6">
+                <button
+                  onClick={() => setShowAddCampaign(false)}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={() => {
+                    if (newCampaign.title && newCampaign.discount && newCampaign.validUntil) {
+                      const newCamp = {
+                        id: Date.now().toString(),
+                        title: newCampaign.title,
+                        description: newCampaign.description,
+                        discount: newCampaign.discount,
+                        validUntil: newCampaign.validUntil,
+                        image: newCampaign.image || 'https://images.pexels.com/photos/1040424/pexels-photo-1040424.jpeg',
+                        category: newCampaign.category || 'general',
+                        active: true
+                      }
+                      setCampaigns([...campaigns, newCamp])
+                      setNewCampaign({
+                        title: '',
+                        description: '',
+                        discount: '',
+                        validUntil: '',
+                        image: '',
+                        category: '',
+                        active: true
+                      })
+                      setShowAddCampaign(false)
+                    }
+                  }}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Kampanya Ekle</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Social Post Modal */}
+      {showCreatePost && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-90vh overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h3 className="text-lg font-semibold">Yeni Gönderi Oluştur</h3>
+              <button
+                onClick={() => setShowCreatePost(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Platform *</label>
+                  <select
+                    value={newSocialPost.platform}
+                    onChange={(e) => setNewSocialPost({...newSocialPost, platform: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="Instagram">Instagram</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="Twitter">Twitter</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Yayın Tarihi</label>
+                  <input
+                    type="datetime-local"
+                    value={newSocialPost.scheduledDate}
+                    onChange={(e) => setNewSocialPost({...newSocialPost, scheduledDate: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Görsel URL</label>
+                  <input
+                    type="url"
+                    value={newSocialPost.image}
+                    onChange={(e) => setNewSocialPost({...newSocialPost, image: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Gönderi görseli URL'si"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Hashtag'ler</label>
+                  <input
+                    type="text"
+                    value={newSocialPost.hashtags}
+                    onChange={(e) => setNewSocialPost({...newSocialPost, hashtags: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="#fashion #luxury #lazzali"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">İçerik *</label>
+                <textarea
+                  value={newSocialPost.content}
+                  onChange={(e) => setNewSocialPost({...newSocialPost, content: e.target.value})}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Gönderi içeriğini yazın..."
+                />
+              </div>
+
+              <div className="flex items-center justify-between mt-6">
+                <button
+                  onClick={() => setShowCreatePost(false)}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={() => {
+                    if (newSocialPost.content && newSocialPost.platform) {
+                      const newPost = {
+                        id: Date.now().toString(),
+                        title: newSocialPost.content.substring(0, 50) + (newSocialPost.content.length > 50 ? '...' : ''),
+                        content: newSocialPost.content,
+                        platform: newSocialPost.platform,
+                        image: newSocialPost.image || 'https://images.pexels.com/photos/1040424/pexels-photo-1040424.jpeg',
+                        scheduledDate: newSocialPost.scheduledDate || new Date().toISOString().split('T')[0],
+                        status: 'Draft',
+                        engagement: 0
+                      }
+                      setSocialPosts([...socialPosts, newPost])
+                      setNewSocialPost({
+                        content: '',
+                        platform: 'Instagram',
+                        image: '',
+                        hashtags: '',
+                        scheduledDate: ''
+                      })
+                      setShowCreatePost(false)
+                    }
+                  }}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Gönderi Oluştur</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Integrations Tab */}
+      {activeTab === 'integrations' && (
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">İntegrasyonlar</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Payment Integrations */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <DollarSign className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Ödeme Sistemleri</h3>
+                    <p className="text-sm text-gray-500">Kredi kartı ve online ödeme</p>
+                  </div>
+                </div>
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>İyzico</span>
+                  <span className="text-green-600">✓ Bağlı</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>PayTR</span>
+                  <span className="text-green-600">✓ Bağlı</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Stripe</span>
+                  <span className="text-gray-400">○ Bağlı Değil</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Shipping Integrations */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Package className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Kargo Sistemleri</h3>
+                    <p className="text-sm text-gray-500">Sevkiyat ve takip</p>
+                  </div>
+                </div>
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>MNG Kargo</span>
+                  <span className="text-green-600">✓ Bağlı</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Yurtiçi Kargo</span>
+                  <span className="text-green-600">✓ Bağlı</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>UPS</span>
+                  <span className="text-gray-400">○ Bağlı Değil</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Social Media Integrations */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Send className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Sosyal Medya</h3>
+                    <p className="text-sm text-gray-500">Otomatik paylaşım</p>
+                  </div>
+                </div>
+                <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Kısmi</span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>Instagram</span>
+                  <span className="text-green-600">✓ Bağlı</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Facebook</span>
+                  <span className="text-green-600">✓ Bağlı</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Twitter</span>
+                  <span className="text-gray-400">○ Bağlı Değil</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Analytics Integrations */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="h-6 w-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Analytics</h3>
+                    <p className="text-sm text-gray-500">Veri analizi ve raporlama</p>
+                  </div>
+                </div>
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>Google Analytics</span>
+                  <span className="text-green-600">✓ Bağlı</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Google Tag Manager</span>
+                  <span className="text-green-600">✓ Bağlı</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Hotjar</span>
+                  <span className="text-gray-400">○ Bağlı Değil</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Email Marketing */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <MessageCircle className="h-6 w-6 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">E-posta Pazarlama</h3>
+                    <p className="text-sm text-gray-500">Otomatik e-posta kampanyaları</p>
+                  </div>
+                </div>
+                <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Pasif</span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>Mailchimp</span>
+                  <span className="text-gray-400">○ Bağlı Değil</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>SendGrid</span>
+                  <span className="text-gray-400">○ Bağlı Değil</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Klaviyo</span>
+                  <span className="text-gray-400">○ Bağlı Değil</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Inventory Management */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                    <Archive className="h-6 w-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Envanter Yönetimi</h3>
+                    <p className="text-sm text-gray-500">Stok ve depo yönetimi</p>
+                  </div>
+                </div>
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>Netsis</span>
+                  <span className="text-green-600">✓ Bağlı</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Logo Tiger</span>
+                  <span className="text-gray-400">○ Bağlı Değil</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>SAP</span>
+                  <span className="text-gray-400">○ Bağlı Değil</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
