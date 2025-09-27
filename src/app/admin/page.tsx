@@ -50,6 +50,33 @@ interface NewProduct {
   sizeType: string
 }
 
+// Stock ID Generator Function
+const generateStockId = (brand: string, size: string, color: string) => {
+  const brandCode = brand.toUpperCase().replace(/\s+/g, '-')
+  const sizeCode = size.toUpperCase()
+  const colorCode = color.toUpperCase().replace(/\s+/g, '-')
+  
+  // Generate sequential number (5 digits)
+  const sequentialNumber = String(Math.floor(Math.random() * 99999) + 1).padStart(5, '0')
+  
+  return `LZI-${sequentialNumber}-${brandCode}-${sizeCode}-${colorCode}`
+}
+
+// Stock ID Parser Function
+const parseStockId = (stockId: string) => {
+  const parts = stockId.split('-')
+  if (parts.length >= 5 && parts[0] === 'LZI') {
+    return {
+      prefix: parts[0],
+      number: parts[1],
+      brand: parts.slice(2, -2).join('-'),
+      size: parts[parts.length - 2],
+      color: parts[parts.length - 1]
+    }
+  }
+  return null
+}
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [showAddProduct, setShowAddProduct] = useState(false)
@@ -256,7 +283,7 @@ export default function AdminDashboard() {
       name: 'Ahmet Yılmaz',
       email: 'ahmet@example.com',
       phone: '+90 532 123 45 67',
-      type: 'Regular',
+      type: 'Gold',
       status: 'Active',
       joinDate: '2024-01-15',
       lastLogin: '2025-01-26',
@@ -270,7 +297,7 @@ export default function AdminDashboard() {
       name: 'Mehmet Kaya',
       email: 'mehmet@example.com',
       phone: '+90 533 987 65 43',
-      type: 'VIP',
+      type: 'Diamond',
       status: 'Active',
       joinDate: '2023-08-20',
       lastLogin: '2025-01-27',
@@ -284,7 +311,7 @@ export default function AdminDashboard() {
       name: 'Ali Demir',
       email: 'ali@example.com', 
       phone: '+90 534 456 78 90',
-      type: 'Premium',
+      type: 'Platinum',
       status: 'Active',
       joinDate: '2024-03-10',
       lastLogin: '2025-01-25',
@@ -298,7 +325,7 @@ export default function AdminDashboard() {
       name: 'Fatih Özkan',
       email: 'fatih@example.com',
       phone: '+90 535 321 09 87',
-      type: 'Regular',
+      type: 'Gold',
       status: 'Inactive',
       joinDate: '2024-06-25',
       lastLogin: '2024-12-15',
@@ -312,7 +339,7 @@ export default function AdminDashboard() {
       name: 'Emre Kızıltan',
       email: 'emre@example.com',
       phone: '+90 536 654 32 10',
-      type: 'VIP',
+      type: 'Diamond',
       status: 'Active',
       joinDate: '2023-05-12',
       lastLogin: '2025-01-27',
@@ -1097,8 +1124,8 @@ export default function AdminDashboard() {
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">VIP Kullanıcılar</p>
-                      <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.type === 'VIP').length}</p>
+                      <p className="text-sm font-medium text-gray-600">Diamond Kullanıcılar</p>
+                      <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.type === 'Diamond').length}</p>
                     </div>
                     <Crown className="h-8 w-8 text-amber-600" />
                   </div>
@@ -1121,7 +1148,7 @@ export default function AdminDashboard() {
                   {/* User Type Filter */}
                   <div className="flex flex-wrap gap-2">
                     <span className="text-sm font-medium text-gray-600 mr-2">Kullanıcı Tipi:</span>
-                    {['Tümü', 'Regular', 'Premium', 'VIP'].map(type => (
+                    {['Tümü', 'Bronze', 'Gold', 'Platinum', 'Diamond'].map(type => (
                       <button
                         key={type}
                         className="px-3 py-1 text-xs rounded-full border transition-colors bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200"
@@ -1200,8 +1227,10 @@ export default function AdminDashboard() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              user.type === 'VIP' ? 'bg-yellow-100 text-yellow-800' :
-                              user.type === 'Premium' ? 'bg-purple-100 text-purple-800' :
+                              user.type === 'Diamond' ? 'bg-purple-100 text-purple-800' :
+                              user.type === 'Platinum' ? 'bg-gray-100 text-gray-800' :
+                              user.type === 'Gold' ? 'bg-yellow-100 text-yellow-800' :
+                              user.type === 'Bronze' ? 'bg-orange-100 text-orange-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
                               {user.type}
@@ -1682,6 +1711,7 @@ export default function AdminDashboard() {
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok ID</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ürün</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marka</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
@@ -1697,8 +1727,26 @@ export default function AdminDashboard() {
                         const purchasePrice = Math.round(product.price * 0.6) // %40 kar marjı varsayımı
                         const profitMargin = ((product.price - purchasePrice) / purchasePrice * 100).toFixed(1)
                         
-                        return (
-                          <tr key={product.id}>
+                        // Generate stock IDs for each size/color combination
+                        const stockItems = product.sizes && product.colors ? 
+                          product.sizes.flatMap((size: string) => 
+                            product.colors.map((color: string) => ({
+                              size,
+                              color,
+                              stockId: generateStockId(product.brand, size, color)
+                            }))
+                          ) : [{
+                            size: 'ONE SIZE',
+                            color: 'DEFAULT',
+                            stockId: generateStockId(product.brand, 'ONE-SIZE', 'DEFAULT')
+                          }]
+
+                        return stockItems.map((stockItem, index) => (
+                          <tr key={`${product.id}-${index}`}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-mono font-medium text-gray-900">{stockItem.stockId}</div>
+                              <div className="text-xs text-gray-500">{stockItem.size} - {stockItem.color}</div>
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">
                                 <div className="flex-shrink-0 h-10 w-10">
@@ -1746,7 +1794,7 @@ export default function AdminDashboard() {
                               </button>
                             </td>
                           </tr>
-                        )
+                        ))
                       })}
                     </tbody>
                   </table>
@@ -2058,6 +2106,29 @@ export default function AdminDashboard() {
                   />
                 </div>
               </div>
+              
+              {/* Stock ID Preview */}
+              {newProduct.brand && newProduct.sizes.length > 0 && newProduct.colors.length > 0 && (
+                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Oluşturulacak Stok ID'leri:</h4>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {newProduct.sizes.flatMap((size: string) => 
+                      newProduct.colors.map((color: string) => {
+                        const stockId = generateStockId(newProduct.brand, size, color)
+                        return (
+                          <div key={`${size}-${color}`} className="flex items-center justify-between p-2 bg-white rounded border">
+                            <span className="text-sm font-mono text-gray-900">{stockId}</span>
+                            <span className="text-xs text-gray-500">{size} - {color}</span>
+                          </div>
+                        )
+                      })
+                    )}
+                  </div>
+                  <div className="mt-2 text-xs text-gray-500">
+                    Toplam {newProduct.sizes.length * newProduct.colors.length} adet stok kodu oluşturulacak.
+                  </div>
+                </div>
+              )}
 
               <div className="mt-6 flex items-center space-x-6">
                 <label className="flex items-center">

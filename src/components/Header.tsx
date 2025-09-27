@@ -7,6 +7,7 @@ import { Search, ShoppingBag, User, Menu, X, Globe } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { brands } from '@/lib/data'
 import { useTranslation, locales, Locale } from '@/lib/i18n'
+import UserProfile from './UserProfile'
 
 export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -111,10 +112,10 @@ export default function Header() {
               <Search className="h-5 w-5" />
             </button>
             
-            {/* Account */}
-            <button className="hidden md:flex p-2 rounded-full hover:bg-gray-100 transition-colors">
-              <User className="h-5 w-5" />
-            </button>
+            {/* User Profile */}
+            <div className="hidden md:block">
+              <UserProfile />
+            </div>
             
             {/* Shopping Bag */}
             <button 

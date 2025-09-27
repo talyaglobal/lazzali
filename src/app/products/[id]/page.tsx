@@ -148,7 +148,7 @@ function ProductDetail({ product }: { product: any }) {
             {/* Size Selection */}
             {product.sizes && product.sizes.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-3">Beden</h3>
+                <h3 className="text-sm font-medium text-gray-900 mb-3">Size</h3>
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map((size: string) => (
                     <button
