@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 export async function POST(request: NextRequest) {
   try {
     // Update brands data based on available brand images
-    const brandsData = [
+    const brandsData: any[] = [
       { name: 'Adidas', slug: 'adidas', description: 'İkonik üç şeritli tasarımıyla tanınan dünya çapında spor giyim ve ayakkabı markası', country: 'Germany', is_featured: true, is_active: true },
       { name: 'Burberry', slug: 'burberry', description: 'Ikonik trench coat ve miras desenleriyle ünlü İngiliz lüks moda evi', country: 'United Kingdom', is_featured: true, is_active: true },
       { name: 'Calvin Klein', slug: 'calvin-klein', description: 'Minimalist tasarım ve modern Amerikan tarzıyla tanınan global moda markası', country: 'USA', is_featured: true, is_active: true },
