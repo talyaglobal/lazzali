@@ -1,12 +1,47 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { products } from '@/lib/data'
+import { getProducts } from '@/lib/products'
 import ProductCard from './ProductCard'
 
 export default function FeaturedProducts() {
-  const newProducts = products.filter(product => product.isNew).slice(0, 4)
-  const saleProducts = products.filter(product => product.originalPrice).slice(0, 4)
+  const [newProducts, setNewProducts] = useState<any[]>([])
+  const [saleProducts, setSaleProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadProducts()
+  }, [])
+
+  const loadProducts = async () => {
+    try {
+      // Get featured products
+      const featured = await getProducts({ featured: true, limit: 4 })
+      setNewProducts(featured)
+      
+      // Get products with sale prices 
+      const all = await getProducts({ limit: 20 })
+      const sale = all.filter(product => product.compare_price && product.compare_price > product.price).slice(0, 4)
+      setSaleProducts(sale)
+    } catch (error) {
+      console.error('Error loading products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold"></div>
+          </div>
+        </div>
+      </section>
+    )
+  }
   
   return (
     <section className="py-20 bg-gray-50">

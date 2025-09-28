@@ -1,12 +1,40 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import Link from 'next/link'
-import { brands } from '@/lib/data'
+import { getBrands } from '@/lib/products'
 
 export default function BrandCarousel() {
-  const ultraLuxuryBrands = brands.filter(brand => brand.category === 'ultra-luxury')
+  const [brands, setBrands] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadBrands()
+  }, [])
+
+  const loadBrands = async () => {
+    try {
+      const data = await getBrands(true) // Get active brands only
+      setBrands(data.filter(brand => brand.is_featured)) // Filter featured brands
+    } catch (error) {
+      console.error('Error loading brands:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold"></div>
+          </div>
+        </div>
+      </section>
+    )
+  }
   
   return (
     <section className="py-24 bg-white">
@@ -30,8 +58,8 @@ export default function BrandCarousel() {
         
         {/* Brand Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
-          {ultraLuxuryBrands.map((brand, index) => (
-            <Link href={`/brands/${brand.id}`} key={brand.id}>
+          {brands.map((brand: any, index: number) => (
+            <Link href={`/brands/${brand.slug}`} key={brand.id}>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -42,13 +70,11 @@ export default function BrandCarousel() {
               <div className="aspect-square bg-gray-50 rounded-lg p-8 flex items-center justify-center mb-8">
                 <div className="text-center">
                   <div className="w-48 h-48 mx-auto mb-6 bg-white rounded-lg flex items-center justify-center p-6">
-                    <Image
-                      src={brand.logo}
-                      alt={`${brand.name} logo`}
-                      width={160}
-                      height={160}
-                      className="object-contain scale-125"
-                    />
+                    <div className="w-32 h-32 bg-luxury-gold/10 rounded-full flex items-center justify-center">
+                      <span className="font-luxury-serif text-2xl font-bold text-luxury-gold">
+                        {brand.name.charAt(0)}
+                      </span>
+                    </div>
                   </div>
                   <h3 className="font-luxury-serif text-3xl font-bold text-gray-900">
                     {brand.name}
@@ -58,15 +84,11 @@ export default function BrandCarousel() {
               
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Kuruluş</span>
-                  <span className="font-medium">{brand.founded}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Menşei</span>
-                  <span className="font-medium">{brand.country}</span>
+                  <span className="text-gray-500">Ülke</span>
+                  <span className="font-medium">{brand.country || 'Italy'}</span>
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  {brand.description}
+                  {brand.description || 'Lüks moda koleksiyonu'}
                 </p>
               </div>
               </motion.div>
