@@ -25,7 +25,8 @@ export default function ProductCard({ product }: ProductCardProps) {
       price: product.price,
       image: product.product_images?.[0]?.url || '/placeholder-product.jpg',
       size: 'Standard',
-      color: 'Default'
+      color: 'Default',
+      inStock: true
     })
   }
   
