@@ -28,7 +28,7 @@ export default function Footer() {
               bir araya getirerek sunuyoruz.
             </p>
             <div className="space-y-2 text-sm text-gray-300">
-              <p>Müşteri Hizmetleri: +90 212 XXX XX XX</p>
+              <p>Müşteri Hizmetleri: +90 538 350 17 11</p>
               <p>Email: info@lazzali.com</p>
             </div>
           </div>

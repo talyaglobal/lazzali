@@ -14,12 +14,12 @@ export default function BrandCard({ brand }: BrandCardProps) {
         whileHover={{ y: -8 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="aspect-video bg-gray-50 relative overflow-hidden flex items-center justify-center p-4">
+        <div className="aspect-video bg-gray-50 relative overflow-hidden flex items-center justify-center p-6">
           <div className="w-full h-full relative flex items-center justify-center">
             <img 
               src={`/brands/${brand.slug}.png`}
               alt={`${brand.name} logo`}
-              className="w-24 h-24 object-contain"
+              className="w-36 h-36 object-contain hover:scale-110 transition-transform duration-300"
               onError={(e) => {
                 // Fallback to SVG if PNG doesn't exist (for Moncler)
                 const target = e.target as HTMLImageElement;
@@ -30,8 +30,8 @@ export default function BrandCard({ brand }: BrandCardProps) {
                   target.style.display = 'none';
                   const parent = target.parentElement;
                   if (parent) {
-                    parent.innerHTML = `<div class="w-24 h-24 bg-luxury-gold/10 rounded-full flex items-center justify-center">
-                      <span class="text-3xl font-luxury-serif font-bold text-luxury-gold">${brand.name.charAt(0)}</span>
+                    parent.innerHTML = `<div class="w-36 h-36 bg-luxury-gold/10 rounded-full flex items-center justify-center">
+                      <span class="text-4xl font-luxury-serif font-bold text-luxury-gold">${brand.name.charAt(0)}</span>
                     </div>`;
                   }
                 }
