@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       .in('slug', ['bottega-veneta', 'off-white', 'maison-margiela'])
 
     // Insert/update brands with upsert
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('brands')
       .upsert(brandsData, {
         onConflict: 'name'
