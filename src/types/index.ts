@@ -14,13 +14,15 @@ export interface CartItem {
 }
 
 export interface FilterState {
-  category: string | null
-  brand: string | null
-  minPrice: number | null
-  maxPrice: number | null
-  sortBy: 'price' | 'name' | 'created_at' | 'popularity'
-  sortOrder: 'asc' | 'desc'
-  search: string | null
+  brands: string[]
+  categories: string[]
+  priceRange: [number, number]
+  sizes: string[]
+  colors: string[]
+  materials: string[]
+  inStock: boolean
+  isNew: boolean
+  isLimitedEdition: boolean
 }
 
 export interface Product {

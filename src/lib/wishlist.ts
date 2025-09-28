@@ -35,7 +35,7 @@ export interface Wishlist {
 }
 
 // Get or create default wishlist for user
-export const getOrCreateDefaultWishlist = async (userId: string) => {
+export const getOrCreateDefaultWishlist = async (userId: string): Promise<Wishlist> => {
   // First try to get existing default wishlist
   let { data: wishlist, error } = await supabase
     .from('wishlists')
@@ -75,6 +75,10 @@ export const getOrCreateDefaultWishlist = async (userId: string) => {
 export const getWishlistItems = async (userId: string) => {
   // First get or create default wishlist
   const wishlist = await getOrCreateDefaultWishlist(userId)
+  
+  if (!wishlist) {
+    return []
+  }
 
   const { data, error } = await supabase
     .from('wishlist_items')
@@ -107,6 +111,10 @@ export const addToWishlist = async (userId: string, productId: string, variantId
   try {
     // Get or create default wishlist
     const wishlist = await getOrCreateDefaultWishlist(userId)
+    
+    if (!wishlist) {
+      return { success: false, error: 'Failed to get wishlist' }
+    }
 
     // Check if item already exists
     const { data: existing } = await supabase
@@ -149,6 +157,10 @@ export const removeFromWishlist = async (userId: string, productId: string, vari
   try {
     // Get default wishlist
     const wishlist = await getOrCreateDefaultWishlist(userId)
+    
+    if (!wishlist) {
+      return { success: false, error: 'Failed to get wishlist' }
+    }
 
     const { error } = await supabase
       .from('wishlist_items')
@@ -172,6 +184,10 @@ export const isInWishlist = async (userId: string, productId: string, variantId?
   try {
     // Get default wishlist
     const wishlist = await getOrCreateDefaultWishlist(userId)
+    
+    if (!wishlist) {
+      return false
+    }
 
     const { data, error } = await supabase
       .from('wishlist_items')
@@ -198,6 +214,10 @@ export const getWishlistCount = async (userId: string) => {
   try {
     // Get default wishlist
     const wishlist = await getOrCreateDefaultWishlist(userId)
+    
+    if (!wishlist) {
+      return 0
+    }
 
     const { count, error } = await supabase
       .from('wishlist_items')
@@ -221,6 +241,10 @@ export const clearWishlist = async (userId: string) => {
   try {
     // Get default wishlist
     const wishlist = await getOrCreateDefaultWishlist(userId)
+    
+    if (!wishlist) {
+      return { success: false, error: 'Failed to get wishlist' }
+    }
 
     const { error } = await supabase
       .from('wishlist_items')
