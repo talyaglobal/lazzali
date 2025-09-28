@@ -155,6 +155,16 @@ export default function LoginPage() {
               </button>
             </form>
 
+            {/* Green Bypass Button */}
+            <div className="mt-4">
+              <button
+                onClick={() => router.push('/account')}
+                className="w-full flex items-center justify-center py-3 px-4 border border-green-600 rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600 transition-colors"
+              >
+                🚀 Test Bypass (Dev Mode)
+              </button>
+            </div>
+
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
