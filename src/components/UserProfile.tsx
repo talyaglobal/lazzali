@@ -44,8 +44,8 @@ export default function UserProfile() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors"
       >
-        <div className="w-8 h-8 bg-luxury-black rounded-full flex items-center justify-center">
-          <User className="h-5 w-5 text-white" />
+        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+          <User className="h-5 w-5 text-gray-900" />
         </div>
         <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
@@ -113,20 +113,20 @@ export default function UserProfile() {
 
             {/* Menu Items */}
             <div className="p-2">
-              <button className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
+              <a href="/account" className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
                 <Settings className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">Hesap Ayarları</span>
-              </button>
+              </a>
               
-              <button className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
+              <a href="/orders" className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
                 <Package className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">Siparişlerim</span>
-              </button>
+              </a>
               
-              <button className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
+              <a href="/wishlist" className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
                 <Heart className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">Favorilerim</span>
-              </button>
+              </a>
               
               <div className="border-t border-gray-100 my-2" />
               

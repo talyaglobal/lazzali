@@ -2634,11 +2634,68 @@ export default function AdminDashboard() {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">İntegrasyonlar</h2>
+            <div className="flex space-x-3">
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+                <Plus className="h-4 w-4" />
+                <span>Yeni Entegrasyon</span>
+              </button>
+            </div>
+          </div>
+          
+          {/* Integration Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Aktif Entegrasyonlar</p>
+                  <p className="text-2xl font-bold text-green-600">8</p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Archive className="h-6 w-6 text-green-600" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Bekleyen Kurulumlar</p>
+                  <p className="text-2xl font-bold text-yellow-600">3</p>
+                </div>
+                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <Package className="h-6 w-6 text-yellow-600" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">API Çağrıları (Bugün)</p>
+                  <p className="text-2xl font-bold text-blue-600">12,847</p>
+                </div>
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-blue-600" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Sistem Durumu</p>
+                  <p className="text-2xl font-bold text-green-600">99.9%</p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Eye className="h-6 w-6 text-green-600" />
+                </div>
+              </div>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Payment Integrations */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:border-blue-300 transition-colors cursor-pointer">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -2652,17 +2709,41 @@ export default function AdminDashboard() {
                 <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span>
               </div>
               <div className="space-y-2 text-sm text-gray-600">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span>İyzico</span>
-                  <span className="text-green-600">✓ Bağlı</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-green-600">✓ Bağlı</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Edit className="h-3 w-3" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span>PayTR</span>
-                  <span className="text-green-600">✓ Bağlı</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-green-600">✓ Bağlı</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Edit className="h-3 w-3" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span>Stripe</span>
-                  <span className="text-gray-400">○ Bağlı Değil</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-400">○ Bağlı Değil</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>PayPal</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-400">○ Bağlı Değil</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2814,6 +2895,184 @@ export default function AdminDashboard() {
                   <span>SAP</span>
                   <span className="text-gray-400">○ Bağlı Değil</span>
                 </div>
+              </div>
+            </div>
+            
+            {/* CRM Integrations */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:border-purple-300 transition-colors cursor-pointer">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Users className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">CRM Sistemleri</h3>
+                    <p className="text-sm text-gray-500">Müşteri ilişkileri yönetimi</p>
+                  </div>
+                </div>
+                <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Kısmi</span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between items-center">
+                  <span>HubSpot</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-green-600">✓ Bağlı</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Edit className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Salesforce</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-400">○ Bağlı Değil</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Pipedrive</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-400">○ Bağlı Değil</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Accounting Integrations */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:border-green-300 transition-colors cursor-pointer">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Muhasebe Sistemleri</h3>
+                    <p className="text-sm text-gray-500">Mali işlemler ve raporlama</p>
+                  </div>
+                </div>
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between items-center">
+                  <span>Foriba</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-green-600">✓ Bağlı</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Edit className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Logo Go</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-green-600">✓ Bağlı</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Edit className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>QuickBooks</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-400">○ Bağlı Değil</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Communication Integrations */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:border-indigo-300 transition-colors cursor-pointer">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                    <MessageCircle className="h-6 w-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">İletişim Araçları</h3>
+                    <p className="text-sm text-gray-500">Chat ve destek sistemleri</p>
+                  </div>
+                </div>
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between items-center">
+                  <span>WhatsApp Business</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-green-600">✓ Bağlı</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Edit className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Zendesk</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-green-600">✓ Bağlı</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Edit className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Intercom</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-400">○ Bağlı Değil</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Integration Activity Log */}
+          <div className="mt-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">Son Entegrasyon Aktiviteleri</h3>
+              <button className="text-blue-600 hover:text-blue-800 text-sm">Tümünü Görüntüle</button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4 p-3 bg-green-50 rounded-lg">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <DollarSign className="h-4 w-4 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">İyzico entegrasyonu güncellendi</p>
+                  <p className="text-xs text-gray-500">2 saat önce</p>
+                </div>
+                <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">Başarılı</span>
+              </div>
+              
+              <div className="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <MessageCircle className="h-4 w-4 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">WhatsApp Business API bağlantısı kuruldu</p>
+                  <p className="text-xs text-gray-500">5 saat önce</p>
+                </div>
+                <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Tamamlandı</span>
+              </div>
+              
+              <div className="flex items-center space-x-4 p-3 bg-yellow-50 rounded-lg">
+                <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <Package className="h-4 w-4 text-yellow-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">MNG Kargo API'sinde yavaşlama tespit edildi</p>
+                  <p className="text-xs text-gray-500">1 gün önce</p>
+                </div>
+                <span className="text-xs text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">İzleniyor</span>
               </div>
             </div>
           </div>
