@@ -4,10 +4,10 @@ import { supabase } from '@/lib/supabase'
 // GET /api/products/[id] - Get single product by ID or slug
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     
     // Check if id is a UUID (product ID) or a slug
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
@@ -46,10 +46,10 @@ export async function GET(
 // PUT /api/products/[id] - Update product (Admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     const { data, error } = await supabase
@@ -96,10 +96,10 @@ export async function PUT(
 // DELETE /api/products/[id] - Delete product (Admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const { error } = await supabase
       .from('products')

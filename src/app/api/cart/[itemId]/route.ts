@@ -4,10 +4,10 @@ import { supabase } from '@/lib/supabase'
 // PUT /api/cart/[itemId] - Update cart item quantity
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { itemId: string } }
+  { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
-    const { itemId } = params
+    const { itemId } = await params
     const body = await request.json()
     const { quantity } = body
 
@@ -59,10 +59,10 @@ export async function PUT(
 // DELETE /api/cart/[itemId] - Remove item from cart
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { itemId: string } }
+  { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
-    const { itemId } = params
+    const { itemId } = await params
 
     const { error } = await supabase
       .from('cart_items')
