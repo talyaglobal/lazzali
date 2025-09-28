@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import Image from 'next/image'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Heart, ShoppingBag, Truck, RotateCcw, Shield, Star } from 'lucide-react'
-import { products } from '@/lib/data'
+import { getProduct } from '@/lib/products'
 import { useStore } from '@/lib/store'
 
 interface ProductPageProps {
@@ -13,9 +12,33 @@ interface ProductPageProps {
   }>
 }
 
-export default async function ProductDetailPage({ params }: ProductPageProps) {
-  const resolvedParams = await params
-  const product = products.find(p => p.id === resolvedParams.id)
+export default function ProductDetailPage({ params }: ProductPageProps) {
+  const [product, setProduct] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadProduct()
+  }, [])
+
+  const loadProduct = async () => {
+    try {
+      const resolvedParams = await params
+      const productData = await getProduct(resolvedParams.id)
+      setProduct(productData)
+    } catch (error) {
+      console.error('Error loading product:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold"></div>
+      </div>
+    )
+  }
 
   if (!product) {
     return (
@@ -36,21 +59,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 function ProductDetail({ product }: { product: any }) {
   const { addToCart } = useStore()
   
-  const [selectedSize, setSelectedSize] = useState('')
-  const [selectedColor, setSelectedColor] = useState('')
-  const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
 
   const handleAddToCart = () => {
-    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
-      alert('Lütfen bir beden seçin')
-      return
-    }
-    if (product.colors && product.colors.length > 0 && !selectedColor) {
-      alert('Lütfen bir renk seçin')
-      return
-    }
-    
     for (let i = 0; i < quantity; i++) {
       addToCart(product)
     }
@@ -75,47 +86,20 @@ function ProductDetail({ product }: { product: any }) {
           {/* Product Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden">
-              <Image
-                src={product.images[selectedImage] || product.images[0]}
-                alt={product.name}
-                width={600}
-                height={600}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            
-            {/* Thumbnail Images */}
-            {product.images.length > 1 && (
-              <div className="flex space-x-2">
-                {product.images.map((image: string, index: number) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                      selectedImage === index 
-                        ? 'border-luxury-gold' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <Image
-                      src={image}
-                      alt={`${product.name} ${index + 1}`}
-                      width={80}
-                      height={80}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
+            <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center">
+              <div className="w-64 h-64 bg-luxury-gold/10 rounded-lg flex items-center justify-center">
+                <span className="font-luxury-serif text-6xl font-bold text-luxury-gold">
+                  {product.name?.charAt(0) || 'P'}
+                </span>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Product Information */}
           <div className="space-y-6">
             {/* Brand and Title */}
             <div>
-              <p className="text-sm font-medium text-luxury-gold mb-2">{product.brand}</p>
+              <p className="text-sm font-medium text-luxury-gold mb-2">{product.brand_name || 'Luxury Brand'}</p>
               <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
               <div className="flex items-center space-x-2 mt-2">
                 <div className="flex items-center">
@@ -129,14 +113,18 @@ function ProductDetail({ product }: { product: any }) {
 
             {/* Price */}
             <div>
-              <p className="text-3xl font-bold text-gray-900">
-                {product.price.toLocaleString('tr-TR')} TL
-              </p>
-              {product.isLimitedEdition && (
-                <p className="text-sm text-luxury-gold font-medium mt-1">Sınırlı Edisyon</p>
-              )}
-              {product.isNew && (
-                <p className="text-sm text-green-600 font-medium mt-1">Yeni Ürün</p>
+              <div className="flex items-center space-x-4">
+                <p className="text-3xl font-bold text-gray-900">
+                  {product.price?.toLocaleString('tr-TR')} {product.currency || 'TRY'}
+                </p>
+                {product.compare_price && product.compare_price > product.price && (
+                  <p className="text-xl text-gray-500 line-through">
+                    {product.compare_price.toLocaleString('tr-TR')} {product.currency || 'TRY'}
+                  </p>
+                )}
+              </div>
+              {product.is_featured && (
+                <p className="text-sm text-luxury-gold font-medium mt-1">Öne Çıkan Ürün</p>
               )}
             </div>
 
@@ -145,45 +133,18 @@ function ProductDetail({ product }: { product: any }) {
               <p className="text-gray-600 leading-relaxed">{product.description}</p>
             </div>
 
-            {/* Size Selection */}
-            {product.sizes && product.sizes.length > 0 && (
+            {/* Tags */}
+            {product.tags && product.tags.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-3">Size</h3>
+                <h3 className="text-sm font-medium text-gray-900 mb-3">Etiketler</h3>
                 <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((size: string) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
-                        selectedSize === size
-                          ? 'border-luxury-gold bg-luxury-gold text-white'
-                          : 'border-gray-300 text-gray-900 hover:border-gray-400'
-                      }`}
+                  {product.tags.map((tag: string) => (
+                    <span
+                      key={tag}
+                      className="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full"
                     >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Color Selection */}
-            {product.colors && product.colors.length > 0 && (
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-3">Renk</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.colors.map((color: string) => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
-                        selectedColor === color
-                          ? 'border-luxury-gold bg-luxury-gold text-white'
-                          : 'border-gray-300 text-gray-900 hover:border-gray-400'
-                      }`}
-                    >
-                      {color}
-                    </button>
+                      {tag}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -260,24 +221,22 @@ function ProductDetail({ product }: { product: any }) {
             <div className="border-t pt-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Ürün Detayları</h3>
               <div className="space-y-2 text-sm">
-                {product.materials && (
-                  <div className="flex">
-                    <span className="text-gray-600 w-24">Malzeme:</span>
-                    <span className="text-gray-900">{product.materials.join(', ')}</span>
-                  </div>
-                )}
                 <div className="flex">
-                  <span className="text-gray-600 w-24">Üretim:</span>
-                  <span className="text-gray-900">{product.craftedIn}</span>
+                  <span className="text-gray-600 w-24">SKU:</span>
+                  <span className="text-gray-900">{product.sku}</span>
+                </div>
+                <div className="flex">
+                  <span className="text-gray-600 w-24">Marka:</span>
+                  <span className="text-gray-900">{product.brand_name}</span>
                 </div>
                 <div className="flex">
                   <span className="text-gray-600 w-24">Kategori:</span>
-                  <span className="text-gray-900">{product.category}</span>
+                  <span className="text-gray-900">{product.category_name}</span>
                 </div>
                 <div className="flex">
-                  <span className="text-gray-600 w-24">Stok:</span>
-                  <span className={product.inStock ? 'text-green-600' : 'text-red-600'}>
-                    {product.inStock ? 'Mevcut' : 'Tükendi'}
+                  <span className="text-gray-600 w-24">Durum:</span>
+                  <span className={product.is_active ? 'text-green-600' : 'text-red-600'}>
+                    {product.is_active ? 'Aktif' : 'Pasif'}
                   </span>
                 </div>
               </div>

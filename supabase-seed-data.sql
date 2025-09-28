@@ -1,7 +1,7 @@
 -- Lazzali Seed Data for Supabase
--- This script populates the database with initial brands, categories, and products
+-- This script safely populates the database with initial brands, categories, and products
 
--- Insert Brands
+-- Insert Brands with conflict resolution
 INSERT INTO brands (name, slug, description, country, is_featured, is_active) VALUES 
 ('Prada', 'prada', 'Yenilikçi malzemeler ve ilerici tasarımlarıyla tanınan İtalyan lüks moda evi', 'Italy', true, true),
 ('Moncler', 'moncler', 'Alp geleneğini çağdaş lüksle birleştiren premium dış giyim markası', 'France', true, true),
@@ -10,20 +10,28 @@ INSERT INTO brands (name, slug, description, country, is_featured, is_active) VA
 ('Stone Island', 'stone-island', 'Teknik inovasyon ve kumaş araştırmasıyla ünlü İtalyan spor giyim markası', 'Italy', true, true),
 ('Bottega Veneta', 'bottega-veneta', 'Eşsiz el işçiliği ve minimalist lüks tasarımları ile tanınan İtalyan moda evi', 'Italy', true, true),
 ('Off-White', 'off-white', 'Sokak modası ile lüks modasını birleştiren yenilikçi Amerikan markası', 'USA', true, true),
-('Maison Margiela', 'maison-margiela', 'Avant-garde yaklaşımı ve dekonstrüksiyon tarzıyla ünlü Belçika moda evi', 'Belgium', true, true);
+('Maison Margiela', 'maison-margiela', 'Avant-garde yaklaşımı ve dekonstrüksiyon tarzıyla ünlü Belçika moda evi', 'Belgium', true, true)
+ON CONFLICT (name) DO UPDATE SET
+  description = EXCLUDED.description,
+  country = EXCLUDED.country,
+  is_featured = EXCLUDED.is_featured,
+  is_active = EXCLUDED.is_active;
 
--- Insert Categories  
+-- Insert Categories with conflict resolution  
 INSERT INTO categories (name, slug, description, icon_name, is_featured, is_active) VALUES 
 ('Giyim', 'clothing', 'Premium giyim koleksiyonu', 'Shirt', true, true),
 ('Ayakkabı', 'footwear', 'Designer ayakkabı ve spor ayakkabı', 'ShoppingBag', true, true),
 ('Aksesuar', 'accessories', 'Lüks aksesuar koleksiyonu', 'Watch', true, true),
 ('Çanta', 'bags', 'Designer çanta koleksiyonu', 'Briefcase', true, true),
 ('Dış Giyim', 'outerwear', 'Premium dış giyim ve mont koleksiyonu', 'Jacket', true, true),
-('Ev Tekstili', 'home-textiles', 'Lüks ev tekstil ürünleri', 'Home', false, true);
+('Ev Tekstili', 'home-textiles', 'Lüks ev tekstil ürünleri', 'Home', false, true)
+ON CONFLICT (name) DO UPDATE SET
+  description = EXCLUDED.description,
+  icon_name = EXCLUDED.icon_name,
+  is_featured = EXCLUDED.is_featured,
+  is_active = EXCLUDED.is_active;
 
--- Get brand and category IDs for products (using variables won't work in raw SQL, so we'll use subqueries)
-
--- Insert Products
+-- Insert Products with conflict resolution
 INSERT INTO products (name, slug, description, short_description, brand_id, category_id, sku, price, compare_price, currency, is_featured, is_active, tags) VALUES
 
 -- Prada Products
@@ -224,15 +232,31 @@ INSERT INTO products (name, slug, description, short_description, brand_id, cate
   true,
   true,
   ARRAY['maison-margiela', 'tabi', 'boots', 'leather']
-);
+)
+ON CONFLICT (slug) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  short_description = EXCLUDED.short_description,
+  price = EXCLUDED.price,
+  compare_price = EXCLUDED.compare_price,
+  is_featured = EXCLUDED.is_featured,
+  is_active = EXCLUDED.is_active,
+  tags = EXCLUDED.tags;
 
 -- Update site settings with realistic values
-UPDATE site_settings SET value = '"TRY"' WHERE key = 'currency';
-UPDATE site_settings SET value = '2000' WHERE key = 'free_shipping_threshold';
-UPDATE site_settings SET value = '0.20' WHERE key = 'tax_rate';
-UPDATE site_settings SET value = '0.01' WHERE key = 'vip_points_rate';
+INSERT INTO site_settings (key, value, description, is_public) VALUES 
+('site_name', '"Lazzali"', 'Site name', true),
+('site_description', '"Luxury Menswear Collection"', 'Site description', true),
+('free_shipping_threshold', '2000', 'Free shipping threshold in TRY', true),
+('tax_rate', '0.20', 'Default tax rate (20% KDV)', false),
+('currency', '"TRY"', 'Default currency', true),
+('vip_points_rate', '0.01', 'Points earned per TRY spent', false)
+ON CONFLICT (key) DO UPDATE SET
+  value = EXCLUDED.value,
+  description = EXCLUDED.description,
+  is_public = EXCLUDED.is_public;
 
--- Sample inventory data
+-- Sample inventory data (only insert if not exists)
 INSERT INTO inventory (product_id, quantity, low_stock_threshold, track_inventory, allow_backorder) 
 SELECT id, 
   CASE 
@@ -243,10 +267,13 @@ SELECT id,
   5 as low_stock_threshold,
   true as track_inventory,
   false as allow_backorder
-FROM products;
+FROM products 
+WHERE NOT EXISTS (
+  SELECT 1 FROM inventory WHERE inventory.product_id = products.id
+);
 
 -- Success message
 SELECT 'Seed data inserted successfully! ' || 
        (SELECT COUNT(*) FROM brands) || ' brands, ' ||
        (SELECT COUNT(*) FROM categories) || ' categories, and ' ||
-       (SELECT COUNT(*) FROM products) || ' products added.' as message;
+       (SELECT COUNT(*) FROM products) || ' products available.' as message;

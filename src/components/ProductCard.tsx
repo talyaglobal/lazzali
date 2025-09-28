@@ -4,12 +4,11 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Heart, Eye } from 'lucide-react'
-import { Product } from '@/types'
 import { useStore } from '@/lib/store'
 import { formatPriceWithoutSymbol } from '@/lib/utils'
 
 interface ProductCardProps {
-  product: Product
+  product: any
 }
 
 export default function ProductCard({ product }: ProductCardProps) {

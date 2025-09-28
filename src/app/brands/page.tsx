@@ -1,18 +1,47 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import BackButton from '@/components/BackButton'
 import BrandCard from '@/components/BrandCard'
-import { brands } from '@/lib/data'
+import { getBrands } from '@/lib/products'
 import { useTranslation } from '@/lib/i18n'
 
 export default function BrandsPage() {
   const { t } = useTranslation()
+  const [brands, setBrands] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const luxuryBrands = brands.filter(brand => brand.category === 'ultra-luxury')
-  const contemporaryBrands = brands.filter(brand => brand.category === 'contemporary')
-  const accessibleBrands = brands.filter(brand => brand.category === 'accessible-premium')
+  useEffect(() => {
+    loadBrands()
+  }, [])
+
+  const loadBrands = async () => {
+    try {
+      const data = await getBrands(true)
+      setBrands(data)
+    } catch (error) {
+      console.error('Error loading brands:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-luxury-platinum">
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold"></div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  const featuredBrands = brands.filter(brand => brand.is_featured)
+  const allBrands = brands.filter(brand => !brand.is_featured)
 
   return (
     <div className="min-h-screen bg-luxury-platinum">
@@ -30,41 +59,33 @@ export default function BrandsPage() {
           </p>
         </div>
 
-        {/* Ultra-Luxury Brands */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-luxury-serif text-luxury-charcoal mb-8">
-            Ultra Lüks
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {luxuryBrands.map(brand => (
-              <BrandCard key={brand.id} brand={brand} />
-            ))}
-          </div>
-        </section>
+        {/* Featured Brands */}
+        {featuredBrands.length > 0 && (
+          <section className="mb-16">
+            <h2 className="text-3xl font-luxury-serif text-luxury-charcoal mb-8">
+              Öne Çıkan Markalar
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredBrands.map(brand => (
+                <BrandCard key={brand.id} brand={brand} />
+              ))}
+            </div>
+          </section>
+        )}
 
-        {/* Contemporary Brands */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-luxury-serif text-luxury-charcoal mb-8">
-            Çağdaş Lüks
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {contemporaryBrands.map(brand => (
-              <BrandCard key={brand.id} brand={brand} />
-            ))}
-          </div>
-        </section>
-
-        {/* Accessible Premium */}
-        <section>
-          <h2 className="text-3xl font-luxury-serif text-luxury-charcoal mb-8">
-            Premium Koleksiyon
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {accessibleBrands.map(brand => (
-              <BrandCard key={brand.id} brand={brand} />
-            ))}
-          </div>
-        </section>
+        {/* All Brands */}
+        {allBrands.length > 0 && (
+          <section>
+            <h2 className="text-3xl font-luxury-serif text-luxury-charcoal mb-8">
+              Tüm Markalar
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {allBrands.map(brand => (
+                <BrandCard key={brand.id} brand={brand} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       <Footer />

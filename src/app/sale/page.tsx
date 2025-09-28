@@ -1,20 +1,37 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
-import { products } from '@/lib/data'
+import { getProducts } from '@/lib/products'
 import { Percent, Clock, Star, Gift } from 'lucide-react'
 import ImportExportButtons from '@/components/ImportExportButtons'
 
 export default function SalePage() {
   const [activeTab, setActiveTab] = useState('all')
+  const [products, setProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadProducts()
+  }, [])
+
+  const loadProducts = async () => {
+    try {
+      const data = await getProducts({ limit: 50 })
+      setProducts(data)
+    } catch (error) {
+      console.error('Error loading products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
   
   // Filter products for sales
-  const saleProducts = products.filter(product => product.originalPrice)
-  const newProducts = products.filter(product => product.isNew)
-  const limitedProducts = products.filter(product => product.isLimitedEdition)
+  const saleProducts = products.filter(product => product.compare_price && product.compare_price > product.price)
+  const newProducts = products.filter(product => product.is_featured)
+  const limitedProducts = products.filter(product => product.tags?.includes('limited'))
   
   // Mock campaign data
   const campaigns = [
@@ -185,19 +202,27 @@ export default function SalePage() {
           </div>
           
           {/* Products Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {getProductsByTab().map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          
-          {getProductsByTab().length === 0 && (
-            <div className="text-center py-16">
-              <Gift className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 text-lg">
-                Bu kategoride şu anda ürün bulunmuyor
-              </p>
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold"></div>
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {getProductsByTab().map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              
+              {getProductsByTab().length === 0 && (
+                <div className="text-center py-16">
+                  <Gift className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 text-lg">
+                    Bu kategoride şu anda ürün bulunmuyor
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </section>
       </main>

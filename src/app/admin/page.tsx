@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   ShoppingBag, 
   Package, 
@@ -25,7 +25,7 @@ import {
   Archive,
   LogOut
 } from 'lucide-react'
-import { products, brands } from '@/lib/data'
+import { getProducts, getBrands } from '@/lib/products'
 import ImportExportButtons from '@/components/ImportExportButtons'
 
 interface NewProduct {
@@ -82,10 +82,28 @@ export default function AdminDashboard() {
   const [showAddProduct, setShowAddProduct] = useState(false)
   const [showEditProduct, setShowEditProduct] = useState(false)
   const [editingProduct, setEditingProduct] = useState<NewProduct | null>(null)
-  const [productsList, setProductsList] = useState(products)
+  const [productsList, setProductsList] = useState<any[]>([])
+  const [brands, setBrands] = useState<any[]>([])
   const [showAddMember, setShowAddMember] = useState(false)
   const [selectedBrandFilter, setSelectedBrandFilter] = useState<string>('')
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('')
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const loadData = async () => {
+    try {
+      const [productsData, brandsData] = await Promise.all([
+        getProducts({ limit: 100 }),
+        getBrands(true)
+      ])
+      setProductsList(productsData)
+      setBrands(brandsData)
+    } catch (error) {
+      console.error('Error loading data:', error)
+    }
+  }
   
   const [newProduct, setNewProduct] = useState<NewProduct>({
     id: '',

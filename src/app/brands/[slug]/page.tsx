@@ -1,11 +1,11 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
-import { brands, products } from '@/lib/data'
+import { getBrands, getProducts } from '@/lib/products'
 import { motion } from 'framer-motion'
 
 interface BrandPageProps {
@@ -14,15 +14,55 @@ interface BrandPageProps {
   }>
 }
 
-export default async function BrandPage({ params }: BrandPageProps) {
-  const { slug } = await params
-  const brand = brands.find(b => b.id === slug)
-  
+export default function BrandPage({ params }: BrandPageProps) {
+  const [brand, setBrand] = useState<any>(null)
+  const [products, setProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadBrandData()
+  }, [])
+
+  const loadBrandData = async () => {
+    try {
+      const resolvedParams = await params
+      const { slug } = resolvedParams
+      
+      const brands = await getBrands(true)
+      const foundBrand = (brands as any[]).find((b: any) => b.slug === slug)
+      
+      if (!foundBrand) {
+        notFound()
+        return
+      }
+      
+      setBrand(foundBrand)
+      
+      const allProducts = await getProducts({ brandId: foundBrand.id })
+      setProducts(allProducts)
+    } catch (error) {
+      console.error('Error loading brand data:', error)
+      notFound()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-luxury-platinum">
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold"></div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
   if (!brand) {
     notFound()
   }
-
-  const brandProducts = products.filter(p => p.brandId === brand.id)
 
   return (
     <div className="min-h-screen bg-luxury-platinum">
@@ -43,13 +83,11 @@ export default async function BrandPage({ params }: BrandPageProps) {
                 {/* Brand Logo */}
                 <div className="mb-8">
                   <div className="w-40 h-40 mx-auto bg-white rounded-lg flex items-center justify-center p-6">
-                    <Image
-                      src={brand.logo}
-                      alt={`${brand.name} logo`}
-                      width={120}
-                      height={120}
-                      className="object-contain"
-                    />
+                    <div className="w-32 h-32 bg-luxury-gold/10 rounded-full flex items-center justify-center">
+                      <span className="font-luxury-serif text-4xl font-bold text-luxury-gold">
+                        {brand.name.charAt(0)}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 
@@ -60,9 +98,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
                   {brand.description}
                 </p>
                 <div className="flex items-center justify-center space-x-4 text-lg">
-                  <span>{brand.country}</span>
-                  <span>•</span>
-                  <span>{brand.founded} yılından beri</span>
+                  <span>{brand.country || 'Italy'}</span>
                 </div>
               </motion.div>
             </div>
@@ -81,24 +117,19 @@ export default async function BrandPage({ params }: BrandPageProps) {
               >
                 <h2 className="text-3xl font-luxury-serif font-bold mb-6">Marka Hikayesi</h2>
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  {brand.heritage}
+                  {brand.description || 'Lüks moda koleksiyonu'}
                 </p>
               </motion.div>
 
               {/* Brand Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-luxury-black mb-2">{brand.founded}</div>
-                  <div className="text-gray-600">Kuruluş Yılı</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-luxury-black mb-2">{brand.country}</div>
+                  <div className="text-3xl font-bold text-luxury-black mb-2">{brand.country || 'Italy'}</div>
                   <div className="text-gray-600">Menşei</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-luxury-black mb-2">
-                    {brand.category === 'ultra-luxury' ? 'Ultra Lüks' : 
-                     brand.category === 'contemporary' ? 'Çağdaş' : 'Premium'}
+                    {brand.is_featured ? 'Öne Çıkan' : 'Premium'}
                   </div>
                   <div className="text-gray-600">Kategori</div>
                 </div>
@@ -119,9 +150,9 @@ export default async function BrandPage({ params }: BrandPageProps) {
                 {brand.name} Koleksiyonu
               </h2>
               
-              {brandProducts.length > 0 ? (
+              {products.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {brandProducts.map(product => (
+                  {products.map(product => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>

@@ -22,7 +22,7 @@ export default function FeaturedProducts() {
       
       // Get products with sale prices 
       const all = await getProducts({ limit: 20 })
-      const sale = all.filter(product => product.compare_price && product.compare_price > product.price).slice(0, 4)
+      const sale = (all as any[]).filter((product: any) => product.compare_price && product.compare_price > product.price).slice(0, 4)
       setSaleProducts(sale)
     } catch (error) {
       console.error('Error loading products:', error)

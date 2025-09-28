@@ -132,6 +132,40 @@ export const getProductBySlug = async (slug: string) => {
   return data
 }
 
+// Get single product by ID or slug
+export const getProduct = async (identifier: string) => {
+  // Check if identifier is a UUID (ID) or a slug
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(identifier)
+  
+  const { data, error } = await supabase
+    .from('products')
+    .select(`
+      *,
+      brands:brand_id (name, slug, description, country),
+      categories:category_id (name, slug, description),
+      product_images (*)
+    `)
+    .eq(isUUID ? 'id' : 'slug', identifier)
+    .eq('is_active', true)
+    .single()
+
+  if (error) {
+    console.error('Error fetching product:', error)
+    return null
+  }
+
+  // Transform the data to include brand_name and category_name for compatibility
+  if (data) {
+    return {
+      ...(data as any),
+      brand_name: (data as any).brands?.name,
+      category_name: (data as any).categories?.name,
+    }
+  }
+
+  return data
+}
+
 // Get all brands
 export const getBrands = async (activeOnly = true) => {
   let query = supabase

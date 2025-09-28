@@ -6,7 +6,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import BackButton from '@/components/BackButton'
 import ProductCard from '@/components/ProductCard'
-import { products, brands, categories } from '@/lib/data'
+import { getProducts, getBrands, getCategories } from '@/lib/products'
 import { useTranslation } from '@/lib/i18n'
 import { Filter, Grid, List } from 'lucide-react'
 
@@ -17,8 +17,16 @@ function ProductsContent() {
   const [selectedBrand, setSelectedBrand] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [sortBy, setSortBy] = useState<string>('name')
+  const [products, setProducts] = useState<any[]>([])
+  const [brands, setBrands] = useState<any[]>([])
+  const [categories, setCategories] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Handle URL parameters
+  // Load data and handle URL parameters
+  useEffect(() => {
+    loadData()
+  }, [])
+
   useEffect(() => {
     const category = searchParams.get('category')
     const brand = searchParams.get('brand')
@@ -31,14 +39,43 @@ function ProductsContent() {
     if (view === 'list' || view === 'grid') setViewMode(view)
   }, [searchParams])
 
+  const loadData = async () => {
+    try {
+      const [productsData, brandsData, categoriesData] = await Promise.all([
+        getProducts({ limit: 100 }),
+        getBrands(true),
+        getCategories(true)
+      ])
+      setProducts(productsData)
+      setBrands(brandsData)
+      setCategories(categoriesData)
+    } catch (error) {
+      console.error('Error loading data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const filteredProducts = products
-    .filter(product => !selectedBrand || product.brandId === selectedBrand)
-    .filter(product => !selectedCategory || product.category === selectedCategory)
+    .filter(product => !selectedBrand || product.brand_id === selectedBrand)
+    .filter(product => !selectedCategory || product.category_id === selectedCategory)
     .sort((a, b) => {
       if (sortBy === 'price') return a.price - b.price
       if (sortBy === 'name') return a.name.localeCompare(b.name)
       return 0
     })
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-luxury-platinum">
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold"></div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-luxury-platinum">
@@ -80,7 +117,7 @@ function ProductsContent() {
                 >
                   <option value="">Tüm Kategoriler</option>
                   {categories.map(category => (
-                    <option key={category.id} value={category.id}>{t(category.id as any)}</option>
+                    <option key={category.id} value={category.id}>{category.name}</option>
                   ))}
                 </select>
               </div>

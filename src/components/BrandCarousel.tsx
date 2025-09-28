@@ -16,7 +16,7 @@ export default function BrandCarousel() {
   const loadBrands = async () => {
     try {
       const data = await getBrands(true) // Get active brands only
-      setBrands(data.filter(brand => brand.is_featured)) // Filter featured brands
+      setBrands((data as any[]).filter((brand: any) => brand.is_featured)) // Filter featured brands
     } catch (error) {
       console.error('Error loading brands:', error)
     } finally {

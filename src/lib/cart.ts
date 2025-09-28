@@ -83,6 +83,9 @@ export const getCartItems = async (userId?: string, sessionId?: string) => {
   try {
     // Get or create cart
     const cart = await getOrCreateCart(userId, sessionId)
+    if (!cart) {
+      throw new Error('Failed to get or create cart')
+    }
 
     const { data, error } = await supabase
       .from('cart_items')
@@ -98,7 +101,7 @@ export const getCartItems = async (userId?: string, sessionId?: string) => {
           product_images (url, alt_text, is_primary)
         )
       `)
-      .eq('cart_id', cart.id)
+      .eq('cart_id', (cart as any).id)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -140,7 +143,7 @@ export const addToCart = async (
     const { data: existingItem, error: checkError } = await supabase
       .from('cart_items')
       .select('*')
-      .eq('cart_id', cart.id)
+      .eq('cart_id', (cart as any).id)
       .eq('product_id', productId)
       .eq('variant_id', variantId || null)
       .single()
@@ -152,12 +155,13 @@ export const addToCart = async (
 
     if (existingItem) {
       // Update quantity if item exists
+      // @ts-ignore
       const { data, error } = await supabase
         .from('cart_items')
         .update({ 
-          quantity: existingItem.quantity + quantity,
-          unit_price: product.price 
-        })
+          quantity: (existingItem as any).quantity + quantity,
+          unit_price: (product as any).price 
+        } as any)
         .eq('id', existingItem.id)
         .select()
         .single()
@@ -248,7 +252,7 @@ export const getCartCount = async (userId?: string, sessionId?: string) => {
     const { data, error } = await supabase
       .from('cart_items')
       .select('quantity')
-      .eq('cart_id', cart.id)
+      .eq('cart_id', (cart as any).id)
 
     if (error) {
       console.error('Error getting cart count:', error)
@@ -299,7 +303,7 @@ export const clearCart = async (userId?: string, sessionId?: string) => {
     const { error } = await supabase
       .from('cart_items')
       .delete()
-      .eq('cart_id', cart.id)
+      .eq('cart_id', (cart as any).id)
 
     if (error) {
       console.error('Error clearing cart:', error)

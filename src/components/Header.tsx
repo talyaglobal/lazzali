@@ -1,19 +1,33 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Search, ShoppingBag, User, Menu, X, Globe } from 'lucide-react'
 import { useStore } from '@/lib/store'
-import { brands } from '@/lib/data'
+import { getBrands } from '@/lib/products'
 import { useTranslation, locales, Locale } from '@/lib/i18n'
 import UserProfile from './UserProfile'
 
 export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [currentLocale, setCurrentLocale] = useState<Locale>('tr')
+  const [brands, setBrands] = useState<any[]>([])
   const { t } = useTranslation(currentLocale)
   const { cartCount, toggleCart, isMobileMenuOpen, toggleMobileMenu } = useStore()
+
+  useEffect(() => {
+    loadBrands()
+  }, [])
+
+  const loadBrands = async () => {
+    try {
+      const data = await getBrands(true)
+      setBrands(data)
+    } catch (error) {
+      console.error('Error loading brands:', error)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
