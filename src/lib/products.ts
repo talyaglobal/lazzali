@@ -69,9 +69,9 @@ export const getProducts = async (options?: {
     .from('products')
     .select(`
       *,
-      brands:brand_id (name, slug),
+      brands:brand_id (name, slug, country),
       categories:category_id (name, slug),
-      product_images (*)
+      product_images (url, alt_text, position, is_primary)
     `)
     .eq('is_active', true)
     .order('created_at', { ascending: false })

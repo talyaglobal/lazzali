@@ -257,81 +257,84 @@ ALTER TABLE wishlists ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wishlist_items ENABLE ROW LEVEL SECURITY;
 
 -- User profiles policies
-CREATE POLICY IF NOT EXISTS "Users can view own profile" ON user_profiles
+DROP POLICY IF EXISTS "Users can view own profile" ON user_profiles;
+CREATE POLICY "Users can view own profile" ON user_profiles
     FOR SELECT USING (auth.uid() = id);
 
-CREATE POLICY IF NOT EXISTS "Users can update own profile" ON user_profiles
+DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
+CREATE POLICY "Users can update own profile" ON user_profiles
     FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY IF NOT EXISTS "Users can insert own profile" ON user_profiles
+DROP POLICY IF EXISTS "Users can insert own profile" ON user_profiles;
+CREATE POLICY "Users can insert own profile" ON user_profiles
     FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- User notification preferences policies
-CREATE POLICY IF NOT EXISTS "Users can view own notifications" ON user_notification_preferences
+CREATE POLICY "Users can view own notifications" ON user_notification_preferences
     FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can update own notifications" ON user_notification_preferences
+CREATE POLICY "Users can update own notifications" ON user_notification_preferences
     FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can insert own notifications" ON user_notification_preferences
+CREATE POLICY "Users can insert own notifications" ON user_notification_preferences
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Cart policies
-CREATE POLICY IF NOT EXISTS "Users can view own cart" ON cart
+CREATE POLICY "Users can view own cart" ON cart
     FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can update own cart" ON cart
+CREATE POLICY "Users can update own cart" ON cart
     FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can insert own cart" ON cart
+CREATE POLICY "Users can insert own cart" ON cart
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Cart items policies
-CREATE POLICY IF NOT EXISTS "Users can view own cart items" ON cart_items
+CREATE POLICY "Users can view own cart items" ON cart_items
     FOR SELECT USING (
         cart_id IN (SELECT id FROM cart WHERE auth.uid() = user_id)
     );
 
-CREATE POLICY IF NOT EXISTS "Users can manage own cart items" ON cart_items
+CREATE POLICY "Users can manage own cart items" ON cart_items
     FOR ALL USING (
         cart_id IN (SELECT id FROM cart WHERE auth.uid() = user_id)
     );
 
 -- Wishlist policies
-CREATE POLICY IF NOT EXISTS "Users can view own wishlists" ON wishlists
+CREATE POLICY "Users can view own wishlists" ON wishlists
     FOR SELECT USING (auth.uid() = user_id OR is_public = true);
 
-CREATE POLICY IF NOT EXISTS "Users can manage own wishlists" ON wishlists
+CREATE POLICY "Users can manage own wishlists" ON wishlists
     FOR ALL USING (auth.uid() = user_id);
 
 -- Wishlist items policies
-CREATE POLICY IF NOT EXISTS "Users can view wishlist items" ON wishlist_items
+CREATE POLICY "Users can view wishlist items" ON wishlist_items
     FOR SELECT USING (
         wishlist_id IN (SELECT id FROM wishlists WHERE auth.uid() = user_id OR is_public = true)
     );
 
-CREATE POLICY IF NOT EXISTS "Users can manage own wishlist items" ON wishlist_items
+CREATE POLICY "Users can manage own wishlist items" ON wishlist_items
     FOR ALL USING (
         wishlist_id IN (SELECT id FROM wishlists WHERE auth.uid() = user_id)
     );
 
 -- Public read policies for catalog tables
-CREATE POLICY IF NOT EXISTS "Anyone can view active brands" ON brands
+CREATE POLICY "Anyone can view active brands" ON brands
     FOR SELECT USING (is_active = true);
 
-CREATE POLICY IF NOT EXISTS "Anyone can view active categories" ON categories
+CREATE POLICY "Anyone can view active categories" ON categories
     FOR SELECT USING (is_active = true);
 
-CREATE POLICY IF NOT EXISTS "Anyone can view active products" ON products
+CREATE POLICY "Anyone can view active products" ON products
     FOR SELECT USING (is_active = true);
 
-CREATE POLICY IF NOT EXISTS "Anyone can view product images" ON product_images
+CREATE POLICY "Anyone can view product images" ON product_images
     FOR SELECT USING (true);
 
-CREATE POLICY IF NOT EXISTS "Anyone can view inventory" ON inventory
+CREATE POLICY "Anyone can view inventory" ON inventory
     FOR SELECT USING (true);
 
-CREATE POLICY IF NOT EXISTS "Anyone can view public site settings" ON site_settings
+CREATE POLICY "Anyone can view public site settings" ON site_settings
     FOR SELECT USING (is_public = true);
 
 -- ========================================
@@ -348,43 +351,51 @@ END;
 $$ language 'plpgsql';
 
 -- Add updated_at triggers
-CREATE TRIGGER IF NOT EXISTS update_user_profiles_updated_at 
+DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles CASCADE;
+CREATE TRIGGER update_user_profiles_updated_at 
     BEFORE UPDATE ON user_profiles 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER IF NOT EXISTS update_user_notification_preferences_updated_at 
+DROP TRIGGER IF EXISTS update_user_notification_preferences_updated_at ON user_notification_preferences CASCADE;
+CREATE TRIGGER update_user_notification_preferences_updated_at 
     BEFORE UPDATE ON user_notification_preferences 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER IF NOT EXISTS update_brands_updated_at 
+DROP TRIGGER IF EXISTS update_brands_updated_at ON brands CASCADE;
+CREATE TRIGGER update_brands_updated_at 
     BEFORE UPDATE ON brands 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER IF NOT EXISTS update_categories_updated_at 
+CREATE TRIGGER update_categories_updated_at 
     BEFORE UPDATE ON categories 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER IF NOT EXISTS update_products_updated_at 
+DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles CASCADE;
+CREATE TRIGGER update_products_updated_at 
     BEFORE UPDATE ON products 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER IF NOT EXISTS update_cart_updated_at 
+DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles CASCADE;
+CREATE TRIGGER update_cart_updated_at 
     BEFORE UPDATE ON cart 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER IF NOT EXISTS update_cart_items_updated_at 
+DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles CASCADE;
+CREATE TRIGGER update_cart_items_updated_at 
     BEFORE UPDATE ON cart_items 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER IF NOT EXISTS update_wishlists_updated_at 
+DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles CASCADE;
+CREATE TRIGGER update_wishlists_updated_at 
     BEFORE UPDATE ON wishlists 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER IF NOT EXISTS update_inventory_updated_at 
+DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles CASCADE;
+CREATE TRIGGER update_inventory_updated_at 
     BEFORE UPDATE ON inventory 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER IF NOT EXISTS update_site_settings_updated_at 
+DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles CASCADE;
+CREATE TRIGGER update_site_settings_updated_at 
     BEFORE UPDATE ON site_settings 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
