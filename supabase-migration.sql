@@ -394,7 +394,7 @@ CREATE TRIGGER update_inventory_updated_at
     BEFORE UPDATE ON inventory 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles CASCADE;
+DROP TRIGGER IF EXISTS update_site_settings_updated_at ON site_settings CASCADE;
 CREATE TRIGGER update_site_settings_updated_at 
     BEFORE UPDATE ON site_settings 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
