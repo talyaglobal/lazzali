@@ -441,44 +441,137 @@ export default function AccountPage() {
   )
 
   const renderAccountOverview = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-luxury-serif text-luxury-charcoal">Hesaba Genel Bakış</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="p-6 border border-gray-200 rounded-lg text-center">
-          <div className="text-2xl font-bold text-luxury-gold mb-2">{user.orders}</div>
-          <div className="text-sm text-gray-600">Toplam Sipariş</div>
-        </div>
-        
-        <div className="p-6 border border-gray-200 rounded-lg text-center">
-          <div className="text-2xl font-bold text-luxury-gold mb-2">{user.wishlist}</div>
-          <div className="text-sm text-gray-600">Favori Ürün</div>
-        </div>
-
-        <div className="p-6 border border-gray-200 rounded-lg text-center">
-          <div className="text-2xl font-bold text-luxury-gold mb-2">{user.points}</div>
-          <div className="text-sm text-gray-600">VIP Puanı</div>
+    <div className="space-y-8">
+      {/* Welcome Section */}
+      <div className="bg-gradient-to-r from-luxury-gold/10 via-luxury-gold/5 to-transparent p-6 rounded-lg border border-luxury-gold/20">
+        <h2 className="text-3xl font-luxury-serif text-luxury-charcoal mb-2">
+          Hoş geldiniz, {user.name}!
+        </h2>
+        <p className="text-gray-600 mb-4">
+          Lazzali ailesinin değerli bir üyesi olarak özel ayrıcalıklarınızdan faydalanın.
+        </p>
+        <div className="flex items-center space-x-2 text-sm">
+          {getTierIcon(user.vipTier)}
+          <span className="font-medium text-luxury-charcoal">VIP {user.vipTier} Üye</span>
+          <span className="text-gray-500">•</span>
+          <span className="text-gray-600">{user.points} puan</span>
         </div>
       </div>
-      
-      <div className="border-t border-gray-200 pt-6">
-        <h3 className="text-xl font-luxury-serif text-luxury-charcoal mb-4">VIP Avantajları</h3>
-        <div className="space-y-3">
-          <div className="flex items-center space-x-3">
-            <div className="w-2 h-2 bg-luxury-gold rounded-full"></div>
-            <span className="text-gray-700">Ücretsiz kargo tüm siparişlerde</span>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-3">
+            <Package className="h-8 w-8 text-luxury-gold" />
+            <div className="text-right">
+              <div className="text-2xl font-bold text-luxury-charcoal">{user.orders}</div>
+              <div className="text-sm text-gray-600">Toplam Sipariş</div>
+            </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <div className="w-2 h-2 bg-luxury-gold rounded-full"></div>
-            <span className="text-gray-700">Özel koleksiyonlara erken erişim</span>
+          <div className="text-xs text-gray-500">Bu ay: 0 sipariş</div>
+        </div>
+        
+        <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-3">
+            <Heart className="h-8 w-8 text-red-500" />
+            <div className="text-right">
+              <div className="text-2xl font-bold text-luxury-charcoal">{user.wishlist}</div>
+              <div className="text-sm text-gray-600">Favori Ürün</div>
+            </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <div className="w-2 h-2 bg-luxury-gold rounded-full"></div>
-            <span className="text-gray-700">Kişisel alışveriş danışmanlığı</span>
+          <div className="text-xs text-gray-500">Bu hafta: 0 eklendi</div>
+        </div>
+
+        <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-3">
+            <Crown className="h-8 w-8 text-purple-500" />
+            <div className="text-right">
+              <div className="text-2xl font-bold text-luxury-charcoal">{user.points}</div>
+              <div className="text-sm text-gray-600">VIP Puanı</div>
+            </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <div className="w-2 h-2 bg-luxury-gold rounded-full"></div>
-            <span className="text-gray-700">Öncelikli müşteri desteği</span>
+          <div className="text-xs text-gray-500">Sonraki seviye: {user.nextTierPoints - user.points} puan</div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div>
+        <h3 className="text-xl font-luxury-serif text-luxury-charcoal mb-4">Hızlı İşlemler</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Link href="/products" className="p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all group text-center">
+            <Package className="h-8 w-8 text-luxury-gold mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <div className="text-sm font-medium text-gray-700">Alışveriş Yap</div>
+          </Link>
+          <Link href="/orders" className="p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all group text-center">
+            <Package className="h-8 w-8 text-blue-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <div className="text-sm font-medium text-gray-700">Siparişlerim</div>
+          </Link>
+          <Link href="/wishlist" className="p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all group text-center">
+            <Heart className="h-8 w-8 text-red-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <div className="text-sm font-medium text-gray-700">Favorilerim</div>
+          </Link>
+          <Link href="/contact" className="p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all group text-center">
+            <Bell className="h-8 w-8 text-green-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <div className="text-sm font-medium text-gray-700">Destek</div>
+          </Link>
+        </div>
+      </div>
+
+      {/* VIP Benefits */}
+      <div className="bg-gradient-to-br from-luxury-gold/5 to-luxury-gold/10 p-6 rounded-lg border border-luxury-gold/20">
+        <h3 className="text-xl font-luxury-serif text-luxury-charcoal mb-4 flex items-center">
+          <Crown className="h-6 w-6 text-luxury-gold mr-2" />
+          VIP {user.vipTier} Avantajlarınız
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-3">
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-luxury-gold rounded-full"></div>
+              <span className="text-gray-700">Ücretsiz kargo tüm siparişlerde</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-luxury-gold rounded-full"></div>
+              <span className="text-gray-700">Özel koleksiyonlara erken erişim</span>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-luxury-gold rounded-full"></div>
+              <span className="text-gray-700">Kişisel alışveriş danışmanlığı</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-luxury-gold rounded-full"></div>
+              <span className="text-gray-700">Öncelikli müşteri desteği</span>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 p-4 bg-white/50 rounded-lg">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-600">Seviye ilerlemesi</span>
+            <span className="font-medium text-luxury-charcoal">{Math.round((user.points / user.nextTierPoints) * 100)}%</span>
+          </div>
+          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-luxury-gold to-yellow-400 h-2 rounded-full transition-all duration-500" 
+              style={{ width: `${Math.min((user.points / user.nextTierPoints) * 100, 100)}%` }}
+            />
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            {user.nextTierPoints - user.points} puan daha ile sonraki seviyeye geçebilirsiniz
+          </p>
+        </div>
+      </div>
+
+      {/* Recent Activity Placeholder */}
+      <div>
+        <h3 className="text-xl font-luxury-serif text-luxury-charcoal mb-4">Son Aktiviteler</h3>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="text-center py-8">
+            <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 mb-4">Henüz aktivite bulunmuyor</p>
+            <Link href="/products" className="inline-flex items-center px-4 py-2 bg-luxury-gold text-white rounded-lg hover:bg-luxury-gold/90 transition-colors">
+              Alışverişe Başla
+            </Link>
           </div>
         </div>
       </div>
@@ -492,9 +585,15 @@ export default function AccountPage() {
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl lg:text-4xl font-luxury-serif text-luxury-charcoal">
-              Hesabım
-            </h1>
+            <div className="flex items-center space-x-4">
+              <h1 className="text-3xl lg:text-4xl font-luxury-serif text-luxury-charcoal">
+                Lazzali Dashboard
+              </h1>
+              <div className="hidden sm:flex items-center px-3 py-1 bg-green-100 border border-green-200 rounded-full">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
+                <span className="text-xs font-medium text-green-700">VIP Active</span>
+              </div>
+            </div>
             <button
               onClick={handleLogout}
               className="px-4 py-2 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"

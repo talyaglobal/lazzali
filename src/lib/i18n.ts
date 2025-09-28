@@ -47,6 +47,7 @@ export const translations = {
     accessories: 'Aksesuar',
     bags: 'Çanta',
     watches: 'Saat',
+    homeTextiles: 'Ev Tekstili',
     
     // Footer
     aboutUs: 'Hakkımızda',
@@ -103,6 +104,7 @@ export const translations = {
     accessories: 'Accessories',
     bags: 'Bags',
     watches: 'Watches',
+    homeTextiles: 'Home Textiles',
     
     // Footer
     aboutUs: 'About Us',
@@ -159,6 +161,7 @@ export const translations = {
     accessories: 'الإكسسوارات',
     bags: 'الحقائب',
     watches: 'الساعات',
+    homeTextiles: 'المنسوجات المنزلية',
     
     // Footer
     aboutUs: 'من نحن',
@@ -215,6 +218,7 @@ export const translations = {
     accessories: 'Аксессуары',
     bags: 'Сумки',
     watches: 'Часы',
+    homeTextiles: 'Домашний текстиль',
     
     // Footer
     aboutUs: 'О нас',

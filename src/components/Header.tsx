@@ -72,15 +72,56 @@ export default function Header() {
                 {t('brands')}
               </Link>
               {/* Mega Menu */}
-              <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                <div className="bg-white rounded-lg shadow-xl border p-6 w-96">
-                  <div className="grid grid-cols-2 gap-4">
-                    {brands.slice(0, 6).map((brand: any) => (
-                      <div key={brand.id} className="p-2 hover:bg-gray-50 rounded cursor-pointer transition-colors">
-                        <div className="font-medium text-sm">{brand.name}</div>
-                        <div className="text-xs text-gray-500 mt-1">{brand.country}</div>
-                      </div>
+              <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                <div className="bg-white rounded-lg shadow-xl border p-6 w-[600px] max-h-96 overflow-y-auto">
+                  <div className="mb-4">
+                    <h3 className="font-luxury-serif text-lg font-bold text-luxury-charcoal mb-1">Tüm Markalar</h3>
+                    <p className="text-sm text-gray-500">{brands.length} marka</p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {brands.map((brand: any) => (
+                      <Link 
+                        key={brand.id} 
+                        href={`/brands/${brand.slug}`}
+                        className="p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group/brand"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <img 
+                            src={`/brands/${brand.slug}.png`}
+                            alt={`${brand.name} logo`}
+                            className="w-8 h-8 object-contain"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              if (!target.src.includes('.svg')) {
+                                target.src = `/brands/${brand.slug}.svg`;
+                              } else {
+                                target.style.display = 'none';
+                                const parent = target.parentElement;
+                                if (parent) {
+                                  parent.innerHTML = `<div class="w-8 h-8 bg-luxury-gold/10 rounded-full flex items-center justify-center">
+                                    <span class="text-xs font-bold text-luxury-gold">${brand.name.charAt(0)}</span>
+                                  </div>`;
+                                }
+                              }
+                            }}
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium text-sm text-gray-900 group-hover/brand:text-luxury-gold transition-colors truncate">
+                              {brand.name}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate">{brand.country}</div>
+                          </div>
+                        </div>
+                      </Link>
                     ))}
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <Link 
+                      href="/brands" 
+                      className="flex items-center justify-center w-full px-4 py-2 bg-luxury-gold text-white rounded-lg hover:bg-luxury-gold/90 transition-colors"
+                    >
+                      Tüm Markaları Görüntüle
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -164,15 +205,61 @@ export default function Header() {
       
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white">
+        <div className="md:hidden border-t border-gray-100 bg-white max-h-screen overflow-y-auto">
           <div className="px-4 py-6 space-y-4">
-            <Link href="/brands" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('brands')}</Link>
+            {/* Main Navigation */}
             <Link href="/products?new=true" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('newArrivals')}</Link>
             <Link href="/products?category=clothing" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('clothing')}</Link>
             <Link href="/products?category=footwear" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('footwear')}</Link>
             <Link href="/products?category=accessories" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('accessories')}</Link>
             <Link href="/products?category=home-textiles" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">Ev Tekstili</Link>
             <Link href="/products?sale=true" className="block font-medium text-gray-900 hover:text-luxury-gold transition-colors">{t('sale')}</Link>
+            
+            {/* Brands Section */}
+            <div className="pt-4 border-t border-gray-200">
+              <div className="mb-3">
+                <Link href="/brands" className="flex items-center justify-between font-medium text-gray-900 hover:text-luxury-gold transition-colors">
+                  <span>{t('brands')}</span>
+                  <span className="text-xs text-gray-500">({brands.length})</span>
+                </Link>
+              </div>
+              <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                {brands.map((brand: any) => (
+                  <Link 
+                    key={brand.id} 
+                    href={`/brands/${brand.slug}`}
+                    className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+                    onClick={toggleMobileMenu}
+                  >
+                    <img 
+                      src={`/brands/${brand.slug}.png`}
+                      alt={`${brand.name} logo`}
+                      className="w-6 h-6 object-contain flex-shrink-0"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        if (!target.src.includes('.svg')) {
+                          target.src = `/brands/${brand.slug}.svg`;
+                        } else {
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<div class="w-6 h-6 bg-luxury-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
+                              <span class="text-xs font-bold text-luxury-gold">${brand.name.charAt(0)}</span>
+                            </div>`;
+                          }
+                        }
+                      }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-sm text-gray-900 truncate">{brand.name}</div>
+                      <div className="text-xs text-gray-500 truncate">{brand.country}</div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+            
+            {/* Account Section */}
             <div className="pt-4 border-t border-gray-200">
               <Link href="/account" className="flex items-center space-x-3 text-gray-700 hover:text-luxury-gold transition-colors">
                 <User className="h-5 w-5" />
