@@ -1,73 +1,71 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { Heart, Star, ShoppingBag, Trash2, Eye, Share, X } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 export default function WishlistPage() {
-  const [wishlistItems, setWishlistItems] = useState([
-    {
-      id: 1,
-      name: 'Burberry Classic Check Scarf',
-      brand: 'Burberry',
-      price: 1200.00,
-      originalPrice: 1400.00,
-      currency: 'TRY',
-      images: ['/api/placeholder/400/400'],
-      inStock: true,
-      rating: 4.8,
-      reviewCount: 124,
-      sizes: ['One Size'],
-      colors: ['Camel Check', 'Navy Check', 'Black Check'],
-      addedDate: '2024-01-10'
-    },
-    {
-      id: 2,
-      name: 'Prada Milano Logo T-Shirt',
-      brand: 'Prada',
-      price: 445.00,
-      originalPrice: null,
-      currency: 'TRY',
-      images: ['/api/placeholder/400/400'],
-      inStock: true,
-      rating: 4.6,
-      reviewCount: 89,
-      sizes: ['XS', 'S', 'M', 'L', 'XL'],
-      colors: ['White', 'Black', 'Navy'],
-      addedDate: '2024-01-15'
-    },
-    {
-      id: 3,
-      name: 'Moncler Down Jacket',
-      brand: 'Moncler',
-      price: 1150.00,
-      originalPrice: null,
-      currency: 'TRY',
-      images: ['/api/placeholder/400/400'],
-      inStock: false,
-      rating: 4.9,
-      reviewCount: 203,
-      sizes: ['S', 'M', 'L', 'XL'],
-      colors: ['Navy', 'Black', 'Red'],
-      addedDate: '2024-01-20'
-    },
-    {
-      id: 4,
-      name: 'Bottega Veneta Intrecciato Wallet',
-      brand: 'Bottega Veneta',
-      price: 3200.00,
-      originalPrice: null,
-      currency: 'TRY',
-      images: ['/api/placeholder/400/400'],
-      inStock: true,
-      rating: 4.7,
-      reviewCount: 67,
-      sizes: ['One Size'],
-      colors: ['Black', 'Brown', 'Navy'],
-      addedDate: '2024-01-25'
+  const [wishlistItems, setWishlistItems] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadWishlistItems()
+  }, [])
+
+  const loadWishlistItems = async () => {
+    try {
+      // TODO: Replace with actual authenticated user ID
+      // For now, we'll just load some sample data from products table
+      const { data: wishlistData, error } = await supabase
+        .from('products')
+        .select(`
+          id,
+          name,
+          price,
+          compare_price,
+          currency,
+          created_at,
+          brands:brand_id (name),
+          product_images (url, is_primary),
+          inventory (quantity)
+        `)
+        .eq('is_featured', true)
+        .limit(4)
+
+      if (error) {
+        console.error('Error loading wishlist:', error)
+        return
+      }
+
+      // Transform data to match component expectations
+      const transformedData = wishlistData?.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        brand: item.brands?.name || 'Luxury Brand',
+        price: item.price,
+        originalPrice: item.compare_price,
+        currency: item.currency,
+        images: item.product_images?.find((img: any) => img.is_primary)?.url ? 
+          [item.product_images.find((img: any) => img.is_primary).url] : 
+          ['/placeholder-product.jpg'],
+        inStock: item.inventory?.[0]?.quantity > 0,
+        rating: 4.5 + Math.random() * 0.5, // Mock rating
+        reviewCount: Math.floor(Math.random() * 200) + 50, // Mock review count
+        sizes: ['S', 'M', 'L', 'XL'], // Mock sizes
+        colors: ['Black', 'Navy', 'White'], // Mock colors
+        addedDate: item.created_at
+      })) || []
+
+      setWishlistItems(transformedData)
+    } catch (error) {
+      console.error('Error loading wishlist:', error)
+    } finally {
+      setLoading(false)
     }
-  ])
+  }
 
   const removeFromWishlist = (itemId: number) => {
     setWishlistItems(items => items.filter(item => item.id !== itemId))
@@ -95,17 +93,22 @@ export default function WishlistPage() {
             </div>
           </div>
           
-          {wishlistItems.length === 0 ? (
+          {loading ? (
+            <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto mb-4"></div>
+              <p className="text-gray-600">Favorileriniz yükleniyor...</p>
+            </div>
+          ) : wishlistItems.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm p-12 text-center">
               <Heart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-medium text-gray-900 mb-2">Favori listeniz boş</h3>
               <p className="text-gray-600 mb-6">Beğendiğiniz ürünleri favorilerinize ekleyerek daha sonra kolayca bulabilirsiniz.</p>
-              <a
+              <Link
                 href="/products"
                 className="inline-flex items-center px-6 py-3 bg-luxury-gold text-white rounded-lg hover:bg-luxury-gold/90 transition-colors"
               >
                 Alışverişe Başla
-              </a>
+              </Link>
             </div>
           ) : (
             <>
@@ -114,9 +117,17 @@ export default function WishlistPage() {
                   <div key={item.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow group">
                     {/* Product Image */}
                     <div className="relative aspect-square">
-                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                        <div className="text-gray-400 text-sm">Ürün Görseli</div>
-                      </div>
+                      {item.images && item.images[0] && item.images[0] !== '/placeholder-product.jpg' ? (
+                        <img 
+                          src={item.images[0]} 
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                          <div className="text-gray-400 text-sm">Ürün Görseli</div>
+                        </div>
+                      )}
                       
                       {/* Discount Badge */}
                       {item.originalPrice && (

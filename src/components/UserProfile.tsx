@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { User, ChevronDown, Settings, Package, Heart, LogOut, Crown, Award, Star, Diamond } from 'lucide-react'
 
 export default function UserProfile() {
@@ -113,20 +114,20 @@ export default function UserProfile() {
 
             {/* Menu Items */}
             <div className="p-2">
-              <a href="/account" className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
+              <Link href="/account" className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
                 <Settings className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">Hesap Ayarları</span>
-              </a>
+              </Link>
               
-              <a href="/orders" className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
+              <Link href="/orders" className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
                 <Package className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">Siparişlerim</span>
-              </a>
+              </Link>
               
-              <a href="/wishlist" className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
+              <Link href="/wishlist" className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors">
                 <Heart className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">Favorilerim</span>
-              </a>
+              </Link>
               
               <div className="border-t border-gray-100 my-2" />
               

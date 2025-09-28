@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { User, Package, Heart, Settings, CreditCard, MapPin, Save, Edit2, Bell, Crown, Award, Star, Diamond, Loader2 } from 'lucide-react'
@@ -614,24 +615,24 @@ export default function AccountPage() {
                   <div>
                     <h2 className="text-2xl font-luxury-serif text-luxury-charcoal mb-6">Siparişlerim</h2>
                     <p className="text-gray-600 mb-4">Henüz sipariş bulunmuyor.</p>
-                    <a
+                    <Link
                       href="/orders"
                       className="inline-flex items-center px-4 py-2 bg-luxury-gold text-white rounded-lg hover:bg-luxury-gold/90 transition-colors"
                     >
                       Tüm Siparişleri Görüntüle
-                    </a>
+                    </Link>
                   </div>
                 )}
                 {activeTab === 'wishlist' && (
                   <div>
                     <h2 className="text-2xl font-luxury-serif text-luxury-charcoal mb-6">Favorilerim</h2>
                     <p className="text-gray-600 mb-4">Henüz favori ürün bulunmuyor.</p>
-                    <a
+                    <Link
                       href="/wishlist"
                       className="inline-flex items-center px-4 py-2 bg-luxury-gold text-white rounded-lg hover:bg-luxury-gold/90 transition-colors"
                     >
                       Favorilere Git
-                    </a>
+                    </Link>
                   </div>
                 )}
                 {activeTab === 'addresses' && (
