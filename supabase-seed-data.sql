@@ -25,7 +25,8 @@ INSERT INTO categories (name, slug, description, icon_name, is_featured, is_acti
 ('Çanta', 'bags', 'Designer çanta koleksiyonu', 'Briefcase', true, true),
 ('Dış Giyim', 'outerwear', 'Premium dış giyim ve mont koleksiyonu', 'Jacket', true, true),
 ('Ev Tekstili', 'home-textiles', 'Lüks ev tekstil ürünleri', 'Home', false, true)
-ON CONFLICT (name) DO UPDATE SET
+ON CONFLICT (slug) DO UPDATE SET
+  name = EXCLUDED.name,
   description = EXCLUDED.description,
   icon_name = EXCLUDED.icon_name,
   is_featured = EXCLUDED.is_featured,
