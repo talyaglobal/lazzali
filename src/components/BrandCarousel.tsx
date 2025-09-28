@@ -70,11 +70,27 @@ export default function BrandCarousel() {
               <div className="aspect-square bg-gray-50 rounded-lg p-8 flex items-center justify-center mb-8">
                 <div className="text-center">
                   <div className="w-48 h-48 mx-auto mb-6 bg-white rounded-lg flex items-center justify-center p-6">
-                    <div className="w-32 h-32 bg-luxury-gold/10 rounded-full flex items-center justify-center">
-                      <span className="font-luxury-serif text-2xl font-bold text-luxury-gold">
-                        {brand.name.charAt(0)}
-                      </span>
-                    </div>
+                    <img 
+                      src={`/brands/${brand.slug}.png`}
+                      alt={`${brand.name} logo`}
+                      className="w-32 h-32 object-contain"
+                      onError={(e) => {
+                        // Fallback to SVG if PNG doesn't exist (for Moncler)
+                        const target = e.target as HTMLImageElement;
+                        if (!target.src.includes('.svg')) {
+                          target.src = `/brands/${brand.slug}.svg`;
+                        } else {
+                          // Final fallback to placeholder
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<div class="w-32 h-32 bg-luxury-gold/10 rounded-full flex items-center justify-center">
+                              <span class="font-luxury-serif text-2xl font-bold text-luxury-gold">${brand.name.charAt(0)}</span>
+                            </div>`;
+                          }
+                        }
+                      }}
+                    />
                   </div>
                   <h3 className="font-luxury-serif text-3xl font-bold text-gray-900">
                     {brand.name}

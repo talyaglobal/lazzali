@@ -16,11 +16,27 @@ export default function BrandCard({ brand }: BrandCardProps) {
       >
         <div className="aspect-video bg-gray-50 relative overflow-hidden flex items-center justify-center p-4">
           <div className="w-full h-full relative flex items-center justify-center">
-            <div className="w-24 h-24 bg-luxury-gold/10 rounded-full flex items-center justify-center">
-              <span className="text-3xl font-luxury-serif font-bold text-luxury-gold">
-                {brand.name.charAt(0)}
-              </span>
-            </div>
+            <img 
+              src={`/brands/${brand.slug}.png`}
+              alt={`${brand.name} logo`}
+              className="w-24 h-24 object-contain"
+              onError={(e) => {
+                // Fallback to SVG if PNG doesn't exist (for Moncler)
+                const target = e.target as HTMLImageElement;
+                if (!target.src.includes('.svg')) {
+                  target.src = `/brands/${brand.slug}.svg`;
+                } else {
+                  // Final fallback to placeholder
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    parent.innerHTML = `<div class="w-24 h-24 bg-luxury-gold/10 rounded-full flex items-center justify-center">
+                      <span class="text-3xl font-luxury-serif font-bold text-luxury-gold">${brand.name.charAt(0)}</span>
+                    </div>`;
+                  }
+                }
+              }}
+            />
           </div>
         </div>
         
