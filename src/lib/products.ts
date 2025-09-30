@@ -72,7 +72,10 @@ export const getProducts = async (options?: {
       *,
       brands:brand_id (name, slug, country),
       categories:category_id (name, slug),
-      product_images (url, alt_text, position, is_primary)
+      product_images (url, alt_text, position, is_primary),
+      product_hashtags (
+        hashtags:hashtag_id (id, name, slug, color, is_active)
+      )
     `)
     .eq('is_active', true)
     .order('created_at', { ascending: false })
@@ -119,7 +122,10 @@ export const getProductBySlug = async (slug: string) => {
       *,
       brands:brand_id (name, slug, description),
       categories:category_id (name, slug, description),
-      product_images (*)
+      product_images (*),
+      product_hashtags (
+        hashtags:hashtag_id (id, name, slug, color, is_active)
+      )
     `)
     .eq('slug', slug)
     .eq('is_active', true)
@@ -144,7 +150,10 @@ export const getProduct = async (identifier: string) => {
       *,
       brands:brand_id (name, slug, description, country),
       categories:category_id (name, slug, description),
-      product_images (*)
+      product_images (*),
+      product_hashtags (
+        hashtags:hashtag_id (id, name, slug, color, is_active)
+      )
     `)
     .eq(isUUID ? 'id' : 'slug', identifier)
     .eq('is_active', true)

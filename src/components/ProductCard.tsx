@@ -187,8 +187,25 @@ export default function ProductCard({ product }: ProductCardProps) {
           ))}
         </div>
         
-        {/* Tags */}
-        {product.tags && product.tags.length > 0 && (
+        {/* Database Hashtags */}
+        {product.product_hashtags && product.product_hashtags.length > 0 && (
+          <div className="flex items-center space-x-1 flex-wrap gap-1">
+            {product.product_hashtags.slice(0, 3).map((item: any, index: number) => (
+              item.hashtags && item.hashtags.is_active && (
+                <span 
+                  key={index} 
+                  className="text-xs text-white px-2 py-1 rounded-full font-medium"
+                  style={{ backgroundColor: item.hashtags.color }}
+                >
+                  #{item.hashtags.name}
+                </span>
+              )
+            ))}
+          </div>
+        )}
+        
+        {/* Legacy Tags */}
+        {(!product.product_hashtags || product.product_hashtags.length === 0) && product.tags && product.tags.length > 0 && (
           <div className="flex items-center space-x-1 flex-wrap gap-1">
             {product.tags.slice(0, 3).map((tag: string, index: number) => (
               <span key={index} className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">

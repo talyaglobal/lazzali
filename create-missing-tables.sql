@@ -134,6 +134,32 @@ CREATE TABLE IF NOT EXISTS inventory (
 );
 
 -- ========================================
+-- HASHTAG TABLES
+-- ========================================
+
+-- Hashtags table
+CREATE TABLE IF NOT EXISTS hashtags (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    slug TEXT NOT NULL UNIQUE,
+    description TEXT,
+    color TEXT DEFAULT '#3B82F6',
+    is_active BOOLEAN DEFAULT true,
+    usage_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Product hashtags junction table
+CREATE TABLE IF NOT EXISTS product_hashtags (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+    hashtag_id UUID REFERENCES hashtags(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(product_id, hashtag_id)
+);
+
+-- ========================================
 -- CART TABLES
 -- ========================================
 
@@ -263,6 +289,15 @@ CREATE INDEX IF NOT EXISTS idx_products_tags_gin ON products USING gin(tags);
 CREATE INDEX IF NOT EXISTS idx_product_images_product_id ON product_images(product_id);
 CREATE INDEX IF NOT EXISTS idx_product_images_is_primary ON product_images(is_primary);
 
+-- Hashtag indexes
+CREATE INDEX IF NOT EXISTS idx_hashtags_slug ON hashtags(slug);
+CREATE INDEX IF NOT EXISTS idx_hashtags_is_active ON hashtags(is_active);
+CREATE INDEX IF NOT EXISTS idx_hashtags_usage_count ON hashtags(usage_count);
+
+-- Product hashtags indexes
+CREATE INDEX IF NOT EXISTS idx_product_hashtags_product_id ON product_hashtags(product_id);
+CREATE INDEX IF NOT EXISTS idx_product_hashtags_hashtag_id ON product_hashtags(hashtag_id);
+
 -- Cart indexes
 CREATE INDEX IF NOT EXISTS idx_cart_user_id ON cart(user_id);
 CREATE INDEX IF NOT EXISTS idx_cart_session_id ON cart(session_id);
@@ -341,6 +376,15 @@ CREATE POLICY "Anyone can view inventory" ON inventory
 DROP POLICY IF EXISTS "Anyone can view public site settings" ON site_settings;
 CREATE POLICY "Anyone can view public site settings" ON site_settings
     FOR SELECT USING (is_public = true);
+
+-- Hashtag policies
+DROP POLICY IF EXISTS "Anyone can view active hashtags" ON hashtags;
+CREATE POLICY "Anyone can view active hashtags" ON hashtags
+    FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Anyone can view product hashtags" ON product_hashtags;
+CREATE POLICY "Anyone can view product hashtags" ON product_hashtags
+    FOR SELECT USING (true);
 
 -- ========================================
 -- TRIGGERS FOR UPDATED_AT
@@ -422,6 +466,12 @@ BEGIN
     DROP TRIGGER IF EXISTS update_user_notification_preferences_updated_at ON user_notification_preferences;
     CREATE TRIGGER update_user_notification_preferences_updated_at 
         BEFORE UPDATE ON user_notification_preferences 
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+    -- Hashtags
+    DROP TRIGGER IF EXISTS update_hashtags_updated_at ON hashtags;
+    CREATE TRIGGER update_hashtags_updated_at 
+        BEFORE UPDATE ON hashtags 
         FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 END $$;

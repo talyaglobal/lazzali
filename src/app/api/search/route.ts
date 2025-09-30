@@ -33,7 +33,10 @@ export async function GET(request: NextRequest) {
           short_description,
           tags,
           brands:brand_id (name),
-          product_images!inner (url, is_primary)
+          product_images!inner (url, is_primary),
+          product_hashtags (
+            hashtags:hashtag_id (id, name, slug, color, is_active)
+          )
         `)
         .eq('is_active', true)
         .or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,short_description.ilike.%${searchQuery}%,tags.cs.{${searchQuery}}`)

@@ -29,7 +29,10 @@ export async function GET(request: NextRequest) {
         *,
         brands:brand_id (name, slug, country),
         categories:category_id (name, slug),
-        product_images (url, alt_text, position, is_primary)
+        product_images (url, alt_text, position, is_primary),
+        product_hashtags (
+          hashtags:hashtag_id (id, name, slug, color, is_active)
+        )
       `, { count: 'exact' })
       .eq('is_active', true)
 

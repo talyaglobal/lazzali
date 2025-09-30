@@ -23,10 +23,12 @@ import {
   MessageCircle,
   Instagram,
   Archive,
-  LogOut
+  LogOut,
+  Hash
 } from 'lucide-react'
 import { getProducts, getBrands } from '@/lib/products'
 import ImportExportButtons from '@/components/ImportExportButtons'
+import HashtagManager from '@/components/admin/HashtagManager'
 
 interface NewProduct {
   id: string
@@ -654,6 +656,19 @@ export default function AdminDashboard() {
                 >
                   <Send className="h-5 w-5" />
                   <span>Sosyal Medya</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('hashtags')}
+                  className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === 'hashtags' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Hash className="h-5 w-5" />
+                  <span>Hashtag Yönetimi</span>
                 </button>
               </li>
               <li>
@@ -2882,6 +2897,11 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Hashtags Tab */}
+      {activeTab === 'hashtags' && (
+        <HashtagManager />
       )}
 
       {/* Integrations Tab */}
