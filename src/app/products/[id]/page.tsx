@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft, Heart, ShoppingBag, Truck, RotateCcw, Shield, Star } from 'lucide-react'
 import { getProduct } from '@/lib/products'
 import { useStore } from '@/lib/store'
+import { useRating } from '@/lib/rating-context'
 import ShoppingCart from '@/components/ShoppingCart'
 
 interface ProductPageProps {
@@ -59,8 +60,12 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
 
 function ProductDetail({ product }: { product: any }) {
   const { addToCart, toggleCart } = useStore()
+  const { getRating, setRating: setGlobalRating } = useRating()
   
   const [quantity, setQuantity] = useState(1)
+  const [hoverRating, setHoverRating] = useState(0)
+  
+  const rating = getRating(product.id)
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
@@ -107,12 +112,26 @@ function ProductDetail({ product }: { product: any }) {
               <p className="text-sm font-medium text-luxury-gold mb-2">{product.brand_name || 'Luxury Brand'}</p>
               <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
               <div className="flex items-center space-x-2 mt-2">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-luxury-gold text-luxury-gold" />
+                <div className="flex items-center space-x-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setGlobalRating(product.id, star)}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      className="focus:outline-none transition-colors"
+                    >
+                      <Star 
+                        className={`h-4 w-4 transition-colors ${
+                          star <= (hoverRating || rating)
+                            ? 'text-yellow-400 fill-yellow-400' 
+                            : 'text-gray-300 hover:text-yellow-300'
+                        }`}
+                      />
+                    </button>
                   ))}
                 </div>
-                <span className="text-sm text-gray-600">(124 değerlendirme)</span>
+                <span className="text-sm text-gray-600">({rating} yıldız)</span>
               </div>
             </div>
 

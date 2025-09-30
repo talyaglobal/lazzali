@@ -88,14 +88,14 @@ function ProductsContent() {
           {/* Filters Sidebar */}
           <aside className="lg:w-64 space-y-6">
             <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="font-semibold mb-4 flex items-center">
+              <h3 className="font-semibold mb-4 flex items-center text-black">
                 <Filter className="mr-2 h-5 w-5" />
                 Filtreler
               </h3>
               
               {/* Brand Filter */}
               <div className="mb-6">
-                <h4 className="font-medium mb-3">{t('brands')}</h4>
+                <h4 className="font-medium mb-3 text-black">{t('brands')}</h4>
                 <MultiSelect
                   options={brands.map(brand => ({ id: brand.id, name: brand.name }))}
                   selectedValues={selectedBrands}
@@ -107,7 +107,7 @@ function ProductsContent() {
 
               {/* Category Filter */}
               <div className="mb-6">
-                <h4 className="font-medium mb-3">{t('categories')}</h4>
+                <h4 className="font-medium mb-3 text-black">{t('categories')}</h4>
                 <MultiSelect
                   options={categories.map(category => ({ id: category.id, name: category.name }))}
                   selectedValues={selectedCategories}

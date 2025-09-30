@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Search, ShoppingBag, User, Menu, X, Globe } from 'lucide-react'
+import { Search, ShoppingCart, User, Menu, X, Globe } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { getBrands } from '@/lib/products'
 import { useTranslation, locales, Locale } from '@/lib/i18n'
@@ -14,7 +14,8 @@ export default function Header() {
   const [currentLocale, setCurrentLocale] = useState<Locale>('tr')
   const [brands, setBrands] = useState<any[]>([])
   const { t } = useTranslation(currentLocale)
-  const { cartCount, toggleCart, isMobileMenuOpen, toggleMobileMenu } = useStore()
+  const { cart, toggleCart, isMobileMenuOpen, toggleMobileMenu } = useStore()
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0)
 
   useEffect(() => {
     loadBrands()
@@ -172,15 +173,15 @@ export default function Header() {
               <UserProfile />
             </div>
             
-            {/* Shopping Bag */}
+            {/* Shopping Cart */}
             <button 
               onClick={toggleCart}
               className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
-              <ShoppingBag className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-luxury-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
+              <ShoppingCart className="h-5 w-5" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-luxury-gold text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                  {totalItems}
                 </span>
               )}
             </button>

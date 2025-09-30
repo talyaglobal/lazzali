@@ -7,6 +7,7 @@ import { Heart, Eye, Plus, Minus, ShoppingCart, Star } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { formatPriceWithoutSymbol } from '@/lib/utils'
 import { useState } from 'react'
+import { useRating } from '@/lib/rating-context'
 
 interface ProductCardProps {
   product: any
@@ -14,9 +15,11 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useStore()
+  const { getRating, setRating: setGlobalRating } = useRating()
   const [quantity, setQuantity] = useState(1)
-  const [rating, setRating] = useState(0)
   const [hoverRating, setHoverRating] = useState(0)
+  
+  const rating = getRating(product.id)
   
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation to product page
@@ -49,7 +52,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleStarClick = (e: React.MouseEvent, starValue: number) => {
     e.preventDefault()
     e.stopPropagation()
-    setRating(starValue)
+    setGlobalRating(product.id, starValue)
   }
 
   const handleStarHover = (starValue: number) => {
@@ -108,6 +111,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Hover Actions */}
         <div className="absolute top-4 right-4 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <motion.button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              // Heart/wishlist functionality here
+            }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50"
@@ -115,6 +123,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Heart className="w-5 h-5" />
           </motion.button>
           <motion.button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              // Quick view functionality here
+            }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50"
@@ -123,17 +136,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           </motion.button>
         </div>
         
-        {/* Quick Add Button */}
-        <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-          <motion.button
-            onClick={handleAddToCart}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full bg-luxury-black text-white py-3 font-medium text-sm tracking-wide uppercase hover:bg-luxury-charcoal transition-colors"
-          >
-            Hızlı Ekle
-          </motion.button>
-        </div>
       </div>
       
       {/* Product Info */}
