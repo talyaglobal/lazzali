@@ -8,14 +8,15 @@ import BackButton from '@/components/BackButton'
 import ProductCard from '@/components/ProductCard'
 import { getProducts, getBrands, getCategories } from '@/lib/products'
 import { useTranslation } from '@/lib/i18n'
-import { Filter, Grid, List } from 'lucide-react'
+import { Filter, Grid, List, RotateCcw } from 'lucide-react'
+import MultiSelect from '@/components/MultiSelect'
 
 function ProductsContent() {
   const { t } = useTranslation()
   const searchParams = useSearchParams()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [selectedBrand, setSelectedBrand] = useState<string>('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [sortBy, setSortBy] = useState<string>('name')
   const [products, setProducts] = useState<any[]>([])
   const [brands, setBrands] = useState<any[]>([])
@@ -33,8 +34,8 @@ function ProductsContent() {
     const sort = searchParams.get('sort')
     const view = searchParams.get('view')
     
-    if (category) setSelectedCategory(category)
-    if (brand) setSelectedBrand(brand)
+    if (category) setSelectedCategories([category])
+    if (brand) setSelectedBrands([brand])
     if (sort) setSortBy(sort)
     if (view === 'list' || view === 'grid') setViewMode(view)
   }, [searchParams])
@@ -57,8 +58,8 @@ function ProductsContent() {
   }
 
   const filteredProducts = products
-    .filter(product => !selectedBrand || product.brand_id === selectedBrand)
-    .filter(product => !selectedCategory || product.category_id === selectedCategory)
+    .filter(product => selectedBrands.length === 0 || selectedBrands.includes(product.brand_id))
+    .filter(product => selectedCategories.length === 0 || selectedCategories.includes(product.category_id))
     .sort((a, b) => {
       if (sortBy === 'price') return a.price - b.price
       if (sortBy === 'name') return a.name.localeCompare(b.name)
@@ -95,32 +96,38 @@ function ProductsContent() {
               {/* Brand Filter */}
               <div className="mb-6">
                 <h4 className="font-medium mb-3">{t('brands')}</h4>
-                <select 
-                  value={selectedBrand} 
-                  onChange={(e) => setSelectedBrand(e.target.value)}
-                  className="w-full p-2 border rounded-md"
-                >
-                  <option value="">Tüm Markalar</option>
-                  {brands.map(brand => (
-                    <option key={brand.id} value={brand.id}>{brand.name}</option>
-                  ))}
-                </select>
+                <MultiSelect
+                  options={brands.map(brand => ({ id: brand.id, name: brand.name }))}
+                  selectedValues={selectedBrands}
+                  onChange={setSelectedBrands}
+                  placeholder="Marka seçin"
+                  className="w-full"
+                />
               </div>
 
               {/* Category Filter */}
               <div className="mb-6">
                 <h4 className="font-medium mb-3">{t('categories')}</h4>
-                <select 
-                  value={selectedCategory} 
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full p-2 border rounded-md"
-                >
-                  <option value="">Tüm Kategoriler</option>
-                  {categories.map(category => (
-                    <option key={category.id} value={category.id}>{category.name}</option>
-                  ))}
-                </select>
+                <MultiSelect
+                  options={categories.map(category => ({ id: category.id, name: category.name }))}
+                  selectedValues={selectedCategories}
+                  onChange={setSelectedCategories}
+                  placeholder="Kategori seçin"
+                  className="w-full"
+                />
               </div>
+
+              {/* Reset Filters Button */}
+              <button
+                onClick={() => {
+                  setSelectedBrands([])
+                  setSelectedCategories([])
+                }}
+                className="w-full flex items-center justify-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Filtreleri Sıfırla
+              </button>
             </div>
           </aside>
 
