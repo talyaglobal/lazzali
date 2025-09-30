@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { CheckCircle, Package, Truck, CreditCard, Mail, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -22,7 +22,7 @@ interface Order {
   order_items: any[]
 }
 
-export default function OrderConfirmationPage() {
+function OrderConfirmationContent() {
   const searchParams = useSearchParams()
   const orderNumber = searchParams.get('order')
   const [order, setOrder] = useState<Order | null>(null)
@@ -297,5 +297,21 @@ export default function OrderConfirmationPage() {
 
       <Footer />
     </div>
+  )
+}
+
+export default function OrderConfirmationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-luxury-platinum">
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold"></div>
+        </div>
+        <Footer />
+      </div>
+    }>
+      <OrderConfirmationContent />
+    </Suspense>
   )
 }

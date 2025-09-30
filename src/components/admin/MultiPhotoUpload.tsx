@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Upload, X, Eye, Plus, Image as ImageIcon, MoreVertical, Trash2, Star } from 'lucide-react'
+import Image from 'next/image'
 
 interface PhotoFile {
   id: string
@@ -192,10 +193,11 @@ export default function MultiPhotoUpload({
               >
                 {/* Photo */}
                 <div className="aspect-square relative">
-                  <img
+                  <Image
                     src={photo.url}
                     alt={photo.alt_text || `Photo ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                   
                   {/* Primary Badge */}
