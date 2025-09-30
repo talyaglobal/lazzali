@@ -100,15 +100,33 @@ export default function AdminDashboard() {
       ])
       
       // Transform products data to match admin dashboard structure
-      const transformedProducts = productsData.map((product: any) => ({
-        ...product,
-        brand: product.brands?.name || product.brand || 'Bilinmiyor',
-        brandId: product.brand_id || product.brandId || '',
-        category: product.categories?.name || product.category || 'Kategori Yok',
-        inStock: product.is_active !== undefined ? product.is_active : (product.inStock || false),
-        isNew: product.is_featured !== undefined ? product.is_featured : (product.isNew || false),
-        images: product.product_images?.map((img: any) => img.url) || product.images || [],
-      }))
+      const transformedProducts = productsData.map((product: any) => {
+        // Handle brand - ensure it's always a string
+        let brandName = 'Bilinmiyor'
+        if (product.brands && typeof product.brands === 'object') {
+          brandName = product.brands.name || 'Bilinmiyor'
+        } else if (product.brand && typeof product.brand === 'string') {
+          brandName = product.brand
+        }
+
+        // Handle category - ensure it's always a string  
+        let categoryName = 'Kategori Yok'
+        if (product.categories && typeof product.categories === 'object') {
+          categoryName = product.categories.name || 'Kategori Yok'
+        } else if (product.category && typeof product.category === 'string') {
+          categoryName = product.category
+        }
+
+        return {
+          ...product,
+          brand: brandName,
+          brandId: product.brand_id || product.brandId || '',
+          category: categoryName,
+          inStock: product.is_active !== undefined ? product.is_active : (product.inStock || false),
+          isNew: product.is_featured !== undefined ? product.is_featured : (product.isNew || false),
+          images: product.product_images?.map((img: any) => img.url) || product.images || [],
+        }
+      })
       
       console.log('Admin Dashboard - Loaded products:', transformedProducts.length)
       console.log('Admin Dashboard - Sample product:', transformedProducts[0])
@@ -383,10 +401,19 @@ export default function AdminDashboard() {
     }
   ])
 
+  // Category mapping from ID to Turkish name
+  const categoryMapping: { [key: string]: string } = {
+    'clothing': 'Giyim',
+    'footwear': 'Ayakkabı',
+    'outerwear': 'Dış Giyim',
+    'accessories': 'Aksesuar',
+    'home-textiles': 'Ev Tekstili'
+  }
+
   // Filtered products for display
   const filteredProducts = productsList.filter(product => {
     const brandMatch = !selectedBrandFilter || product.brandId === selectedBrandFilter
-    const categoryMatch = !selectedCategoryFilter || product.category === selectedCategoryFilter
+    const categoryMatch = !selectedCategoryFilter || product.category === categoryMapping[selectedCategoryFilter]
     return brandMatch && categoryMatch
   })
 
@@ -818,20 +845,15 @@ export default function AdminDashboard() {
                       <div className="flex flex-wrap gap-2">
                         {productCategories.map((category: any) => (
                           <button
-                            key={category}
-                            onClick={() => setSelectedCategoryFilter(selectedCategoryFilter === category ? '' : category)}
+                            key={category.id}
+                            onClick={() => setSelectedCategoryFilter(selectedCategoryFilter === category.id ? '' : category.id)}
                             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                              selectedCategoryFilter === category
+                              selectedCategoryFilter === category.id
                                 ? 'bg-blue-100 text-blue-800 border border-blue-200'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                           >
-                            {category === 'clothing' ? 'Giyim' : 
-                             category === 'footwear' ? 'Ayakkabı' :
-                             category === 'accessories' ? 'Aksesuar' :
-                             category === 'outerwear' ? 'Dış Giyim' :
-                             category === 'home-textiles' ? 'Ev Tekstili' : 
-                             category}
+                            {category.name}
                           </button>
                         ))}
                         {selectedCategoryFilter && (
