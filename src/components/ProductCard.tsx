@@ -3,9 +3,10 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Heart, Eye } from 'lucide-react'
+import { Heart, Eye, Plus, Minus, ShoppingCart, Star } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { formatPriceWithoutSymbol } from '@/lib/utils'
+import { useState } from 'react'
 
 interface ProductCardProps {
   product: any
@@ -13,21 +14,50 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useStore()
+  const [quantity, setQuantity] = useState(1)
+  const [rating, setRating] = useState(0)
+  const [hoverRating, setHoverRating] = useState(0)
   
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation to product page
     e.stopPropagation()
-    addToCart({
-      id: product.id,
-      productId: product.id,
-      name: product.name,
-      brand: product.brands?.name || 'Luxury Brand',
-      price: product.price,
-      image: product.product_images?.[0]?.url || '/placeholder-product.jpg',
-      size: 'Standard',
-      color: 'Default',
-      inStock: true
-    })
+    
+    // Add the specified quantity to cart
+    for (let i = 0; i < quantity; i++) {
+      addToCart({
+        id: product.id,
+        productId: product.id,
+        name: product.name,
+        brand: product.brands?.name || 'Luxury Brand',
+        price: product.price,
+        image: product.product_images?.[0]?.url || '/placeholder-product.jpg',
+        size: 'Standard',
+        color: 'Default',
+        inStock: true
+      })
+    }
+  }
+
+  const handleQuantityChange = (e: React.MouseEvent, newQuantity: number) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (newQuantity >= 1) {
+      setQuantity(newQuantity)
+    }
+  }
+
+  const handleStarClick = (e: React.MouseEvent, starValue: number) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setRating(starValue)
+  }
+
+  const handleStarHover = (starValue: number) => {
+    setHoverRating(starValue)
+  }
+
+  const handleStarLeave = () => {
+    setHoverRating(0)
   }
   
   return (
@@ -134,6 +164,27 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
         
+        {/* Star Rating */}
+        <div className="flex items-center justify-center space-x-1 py-2">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              onClick={(e) => handleStarClick(e, star)}
+              onMouseEnter={() => handleStarHover(star)}
+              onMouseLeave={handleStarLeave}
+              className="focus:outline-none transition-colors"
+            >
+              <Star 
+                className={`h-5 w-5 transition-colors ${
+                  star <= (hoverRating || rating)
+                    ? 'text-yellow-400 fill-yellow-400' 
+                    : 'text-gray-300 hover:text-yellow-300'
+                }`}
+              />
+            </button>
+          ))}
+        </div>
+        
         {/* Tags */}
         {product.tags && product.tags.length > 0 && (
           <div className="flex items-center space-x-1 flex-wrap gap-1">
@@ -148,6 +199,35 @@ export default function ProductCard({ product }: ProductCardProps) {
         {product.country_of_origin && (
           <p className="text-xs text-gray-500">{product.country_of_origin} yapımı</p>
         )}
+
+        {/* Quantity Selector and Add to Cart */}
+        <div className="space-y-3 pt-2">
+          {/* Quantity Selector */}
+          <div className="flex items-center justify-center space-x-3">
+            <button
+              onClick={(e) => handleQuantityChange(e, quantity - 1)}
+              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <span className="text-lg font-medium min-w-[2rem] text-center">{quantity}</span>
+            <button
+              onClick={(e) => handleQuantityChange(e, quantity + 1)}
+              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+          
+          {/* Quick Add to Cart Button */}
+          <button
+            onClick={handleAddToCart}
+            className="w-full bg-green-600 text-white py-2.5 px-4 rounded-lg font-medium text-sm hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            <span>Hızlı Sepete Ekle</span>
+          </button>
+        </div>
       </div>
       </motion.div>
     </Link>

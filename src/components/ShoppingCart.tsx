@@ -150,8 +150,11 @@ export default function ShoppingCart() {
                   </div>
                   
                   <div className="space-y-3">
-                    <button className="w-full luxury-button py-4">
-                      Secure Checkout
+                    <button 
+                      onClick={() => window.location.href = '/checkout'}
+                      className="w-full luxury-button py-4"
+                    >
+                      Güvenli Ödeme
                     </button>
                     <button 
                       onClick={clearCart}
