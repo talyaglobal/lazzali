@@ -38,7 +38,7 @@ interface PaymentInfo {
 }
 
 export default function CheckoutPage() {
-  const { cart, cartTotal, cartCount, updateQuantity, removeFromCart } = useStore()
+  const { cart, cartTotal, cartCount, updateQuantity, removeFromCart, clearCart } = useStore()
   const [currentStep, setCurrentStep] = useState(1)
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     firstName: '',
@@ -75,21 +75,84 @@ export default function CheckoutPage() {
     }
   }
 
-  const handlePaymentSubmit = (e: React.FormEvent) => {
+  const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // Validate payment info
     const requiredFields = ['cardNumber', 'expiryDate', 'cvv', 'cardName']
     const isValid = requiredFields.every(field => paymentInfo[field as keyof PaymentInfo])
     
-    if (isValid) {
-      setCurrentStep(3)
-      // Here you would integrate with payment processor
-      setTimeout(() => {
-        alert('Siparişiniz başarıyla tamamlandı!')
-        window.location.href = '/account'
-      }, 2000)
-    } else {
+    if (!isValid) {
       alert('Lütfen tüm kart bilgilerini doldurun')
+      return
+    }
+
+    setCurrentStep(3)
+    
+    try {
+      // Prepare order data
+      const orderData = {
+        items: cart.map(item => ({
+          product_id: item.productId,
+          name: item.name,
+          sku: item.id,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        shipping_address: {
+          first_name: shippingInfo.firstName,
+          last_name: shippingInfo.lastName,
+          email: shippingInfo.email,
+          phone: shippingInfo.phone,
+          address: shippingInfo.address,
+          city: shippingInfo.city,
+          district: shippingInfo.district,
+          postal_code: shippingInfo.postalCode,
+          country: shippingInfo.country
+        },
+        billing_address: {
+          first_name: shippingInfo.firstName,
+          last_name: shippingInfo.lastName,
+          email: shippingInfo.email,
+          phone: shippingInfo.phone,
+          address: shippingInfo.address,
+          city: shippingInfo.city,
+          district: shippingInfo.district,
+          postal_code: shippingInfo.postalCode,
+          country: shippingInfo.country
+        },
+        payment_method: {
+          type: 'credit_card',
+          card_number: paymentInfo.cardNumber,
+          installments: paymentInfo.installments
+        }
+      }
+
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData)
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        // Clear cart after successful order
+        clearCart()
+        alert('Siparişiniz başarıyla tamamlandı!')
+        // Redirect to order confirmation page or account
+        setTimeout(() => {
+          window.location.href = `/order-confirmation?order=${result.data.order_number}`
+        }, 2000)
+      } else {
+        throw new Error(result.error || 'Sipariş oluşturulamadı')
+      }
+      
+    } catch (error) {
+      console.error('Order creation error:', error)
+      alert('Sipariş oluşturulurken hata oluştu. Lütfen tekrar deneyin.')
+      setCurrentStep(2) // Go back to payment step
     }
   }
 

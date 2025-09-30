@@ -111,28 +111,23 @@ export async function POST(request: NextRequest) {
         name: body.name,
         slug: body.slug,
         description: body.description,
-        short_description: body.short_description,
         brand_id: body.brand_id,
         category_id: body.category_id,
         sku: body.sku,
         price: body.price,
         compare_price: body.compare_price,
         currency: body.currency || 'TRY',
-        weight: body.weight,
-        material: body.material,
-        country_of_origin: body.country_of_origin,
         is_featured: body.is_featured || false,
         is_active: body.is_active !== false,
-        tags: body.tags || [],
-        meta_title: body.meta_title,
-        meta_description: body.meta_description
+        tags: body.tags || []
       }])
       .select()
       .single()
 
     if (error) {
+      console.error('Supabase error creating product:', error)
       return NextResponse.json(
-        { error: 'Failed to create product' },
+        { error: 'Failed to create product', details: error.message },
         { status: 500 }
       )
     }

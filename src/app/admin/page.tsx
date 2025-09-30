@@ -86,6 +86,7 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<NewProduct | null>(null)
   const [productsList, setProductsList] = useState<any[]>([])
   const [brands, setBrands] = useState<any[]>([])
+  const [categories, setCategories] = useState<any[]>([])
   const [showAddMember, setShowAddMember] = useState(false)
   const [selectedBrandFilter, setSelectedBrandFilter] = useState<string>('')
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('')
@@ -98,9 +99,10 @@ export default function AdminDashboard() {
 
   const loadData = async () => {
     try {
-      const [productsData, brandsData] = await Promise.all([
+      const [productsData, brandsData, categoriesResponse] = await Promise.all([
         getProducts({ limit: 100 }),
-        getBrands(true)
+        getBrands(true),
+        fetch('/api/categories').then(res => res.json())
       ])
       
       // Transform products data to match admin dashboard structure
@@ -137,6 +139,7 @@ export default function AdminDashboard() {
       
       setProductsList(transformedProducts)
       setBrands(brandsData)
+      setCategories(categoriesResponse.data || [])
     } catch (error) {
       console.error('Error loading data:', error)
     }
@@ -430,41 +433,104 @@ export default function AdminDashboard() {
     { id: 'home-textiles', name: 'Ev Tekstili' }
   ]
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     if (!newProduct.name || !newProduct.brand || !newProduct.price) {
       alert('Lütfen zorunlu alanları doldurun')
       return
     }
 
-    const product = {
-      ...newProduct,
-      id: newProduct.id || `product-${Date.now()}`,
-      images: newProduct.images.filter(img => img.trim() !== ''),
-    }
+    try {
+      // Find brand and category IDs
+      const brand = brands.find(b => b.name === newProduct.brand || b.id === newProduct.brandId)
+      if (!brand) {
+        alert('Geçerli bir marka seçin')
+        return
+      }
 
-    setProductsList([...productsList, product])
-    setNewProduct({
-      id: '',
-      name: '',
-      brand: '',
-      brandId: '',
-      price: 0,
-      category: '',
-      subcategory: '',
-      description: '',
-      images: [''],
-      sizes: [],
-      colors: [],
-      materials: [],
-      inStock: true,
-      isLimitedEdition: false,
-      isNew: true,
-      craftedIn: '',
-      gender: 'unisex',
-      sizeType: 'clothing'
-    })
-    setShowAddProduct(false)
-    alert('Ürün başarıyla eklendi!')
+      // Create slug from product name
+      const slug = newProduct.name.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .trim()
+
+      // Find category ID
+      const category = categories.find(c => c.id === newProduct.category || c.slug === newProduct.category)
+      if (!category) {
+        alert('Geçerli bir kategori seçin')
+        return
+      }
+
+      // Prepare product data for API
+      const productData = {
+        name: newProduct.name,
+        slug: slug,
+        description: newProduct.description,
+        brand_id: brand.id,
+        category_id: category.id,
+        sku: `SKU-${Date.now()}`,
+        price: newProduct.price,
+        compare_price: newProduct.originalPrice,
+        currency: 'TRY',
+        is_featured: newProduct.isLimitedEdition,
+        is_active: newProduct.inStock,
+        tags: [...newProduct.sizes, ...newProduct.colors, ...newProduct.materials]
+      }
+
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create product')
+      }
+
+      const result = await response.json()
+      
+      // Add to local state for immediate UI update
+      const product = {
+        ...newProduct,
+        id: result.data.id,
+        images: newProduct.images.filter(img => img.trim() !== ''),
+      }
+
+      setProductsList([...productsList, product])
+      
+      // Reset form
+      setNewProduct({
+        id: '',
+        name: '',
+        brand: '',
+        brandId: '',
+        price: 0,
+        category: '',
+        subcategory: '',
+        description: '',
+        images: [''],
+        sizes: [],
+        colors: [],
+        materials: [],
+        inStock: true,
+        isLimitedEdition: false,
+        isNew: true,
+        craftedIn: '',
+        gender: 'unisex',
+        sizeType: 'clothing'
+      })
+      
+      setShowAddProduct(false)
+      alert('Ürün başarıyla eklendi!')
+      
+      // Reload data to get fresh data from database
+      loadData()
+      
+    } catch (error) {
+      console.error('Product creation error:', error)
+      alert('Ürün eklenirken hata oluştu: ' + error.message)
+    }
   }
 
   const handleViewProduct = (product: any) => {
@@ -578,6 +644,19 @@ export default function AdminDashboard() {
                 >
                   <Package className="h-5 w-5" />
                   <span>Ürünler</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('brands')}
+                  className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === 'brands' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Crown className="h-5 w-5" />
+                  <span>Markalar</span>
                 </button>
               </li>
               <li>
@@ -1183,6 +1262,88 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'brands' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Marka Yönetimi</h2>
+                <div className="flex space-x-3">
+                  <ImportExportButtons
+                    data={brands}
+                    filename="brands_export"
+                    entityName="marka"
+                  />
+                  <button 
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+                    onClick={() => setActiveTab('add-brand')}
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Marka Ekle</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Brands Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {brands.map((brand) => (
+                  <div key={brand.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-luxury-gold/10 rounded-lg flex items-center justify-center">
+                          <Crown className="h-6 w-6 text-luxury-gold" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{brand.name}</h3>
+                          <p className="text-sm text-gray-500">{brand.country}</p>
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button 
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Düzenle"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button 
+                          className="text-red-600 hover:text-red-800"
+                          title="Sil"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">{brand.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        brand.is_featured ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {brand.is_featured ? 'Öne Çıkan' : 'Normal'}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        brand.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {brand.is_active ? 'Aktif' : 'Pasif'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {brands.length === 0 && (
+                <div className="text-center py-12">
+                  <Crown className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Henüz marka yok</h3>
+                  <p className="text-gray-600 mb-4">İlk markanızı ekleyerek başlayın.</p>
+                  <button 
+                    className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    onClick={() => setActiveTab('add-brand')}
+                  >
+                    Marka Ekle
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -2141,10 +2302,11 @@ export default function AdminDashboard() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="">Kategori seçin</option>
-                    <option value="clothing">Giyim</option>
-                    <option value="footwear">Ayakkabı</option>
-                    <option value="accessories">Aksesuar</option>
-                    <option value="outerwear">Dış Giyim</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -2359,10 +2521,11 @@ export default function AdminDashboard() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="">Kategori seçin</option>
-                    <option value="clothing">Giyim</option>
-                    <option value="footwear">Ayakkabı</option>
-                    <option value="accessories">Aksesuar</option>
-                    <option value="outerwear">Dış Giyim</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
