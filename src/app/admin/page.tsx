@@ -29,6 +29,8 @@ import {
 import { getProducts, getBrands } from '@/lib/products'
 import ImportExportButtons from '@/components/ImportExportButtons'
 import HashtagManager from '@/components/admin/HashtagManager'
+import MultiPhotoUpload from '@/components/admin/MultiPhotoUpload'
+import CategoryTreeNode from '@/components/admin/CategoryTreeNode'
 
 interface NewProduct {
   id: string
@@ -92,6 +94,7 @@ export default function AdminDashboard() {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('')
   const [showViewProduct, setShowViewProduct] = useState(false)
   const [viewingProduct, setViewingProduct] = useState<any>(null)
+  const [productPhotos, setProductPhotos] = useState<any[]>([])
 
   useEffect(() => {
     loadData()
@@ -674,6 +677,19 @@ export default function AdminDashboard() {
               </li>
               <li>
                 <button
+                  onClick={() => setActiveTab('categories')}
+                  className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === 'categories' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Archive className="h-5 w-5" />
+                  <span>Kategori Yönetimi</span>
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => setActiveTab('stock')}
                   className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
                     activeTab === 'stock' 
@@ -683,6 +699,45 @@ export default function AdminDashboard() {
                 >
                   <Archive className="h-5 w-5" />
                   <span>Stok Yönetimi</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('sizes')}
+                  className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === 'sizes' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Package className="h-5 w-5" />
+                  <span>Beden Yönetimi</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('colors')}
+                  className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === 'colors' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Star className="h-5 w-5" />
+                  <span>Renk Yönetimi</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('materials')}
+                  className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === 'materials' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Award className="h-5 w-5" />
+                  <span>Malzeme Yönetimi</span>
                 </button>
               </li>
               <li>
@@ -1265,6 +1320,58 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {activeTab === 'categories' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Kategori Yönetimi</h2>
+                <div className="flex space-x-3">
+                  <ImportExportButtons
+                    data={categories}
+                    filename="categories_export"
+                    entityName="kategori"
+                  />
+                  <button 
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+                    onClick={() => setActiveTab('add-category')}
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Ana Kategori Ekle</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Category Tree */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="space-y-3">
+                  {categories.filter(cat => !cat.parent_id).map((category) => (
+                    <CategoryTreeNode 
+                      key={category.id} 
+                      category={category} 
+                      categories={categories}
+                      onEdit={(cat) => console.log('Edit:', cat)}
+                      onDelete={(cat) => console.log('Delete:', cat)}
+                      onAddChild={(cat) => console.log('Add child:', cat)}
+                    />
+                  ))}
+                </div>
+
+                {categories.length === 0 && (
+                  <div className="text-center py-12">
+                    <Archive className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Henüz kategori yok</h3>
+                    <p className="text-gray-600 mb-4">İlk kategorinizi ekleyerek başlayın.</p>
+                    <button 
+                      className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                      onClick={() => setActiveTab('add-category')}
+                    >
+                      Kategori Ekle
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {activeTab === 'brands' && (
             <div>
               <div className="flex items-center justify-between mb-6">
@@ -1342,6 +1449,355 @@ export default function AdminDashboard() {
                   >
                     Marka Ekle
                   </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'sizes' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Beden Yönetimi</h2>
+                <div className="flex space-x-3">
+                  <button 
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Beden Grubu Ekle</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Category-based Size Management */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {categories.map((category) => (
+                  <div key={category.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <Package className="h-5 w-5 text-blue-600" />
+                        <h3 className="font-semibold text-gray-900">{category.name}</h3>
+                      </div>
+                      <button className="text-blue-600 hover:text-blue-800">
+                        <Edit className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    {/* Size List for this Category */}
+                    <div className="space-y-2 mb-4">
+                      <h4 className="text-sm font-medium text-gray-700">Mevcut Bedenler:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {/* Example sizes - this should come from database */}
+                        {category.slug === 'clothing' && ['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                          <span key={size} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full flex items-center space-x-2">
+                            <span>{size}</span>
+                            <button className="hover:text-blue-900">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                        {category.slug === 'footwear' && ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'].map((size) => (
+                          <span key={size} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full flex items-center space-x-2">
+                            <span>{size}</span>
+                            <button className="hover:text-blue-900">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                        {category.slug === 'accessories' && ['One Size', 'S/M', 'L/XL'].map((size) => (
+                          <span key={size} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full flex items-center space-x-2">
+                            <span>{size}</span>
+                            <button className="hover:text-blue-900">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Add New Size */}
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        placeholder="Yeni beden ekle..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                      />
+                      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {categories.length === 0 && (
+                <div className="text-center py-12">
+                  <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Henüz kategori yok</h3>
+                  <p className="text-gray-600 mb-4">Beden yönetimi için önce kategori oluşturun.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'colors' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Renk Yönetimi</h2>
+                <div className="flex space-x-3">
+                  <button 
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Renk Paleti Ekle</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Category-based Color Management */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {categories.map((category) => (
+                  <div key={category.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <Star className="h-5 w-5 text-purple-600" />
+                        <h3 className="font-semibold text-gray-900">{category.name}</h3>
+                      </div>
+                      <button className="text-purple-600 hover:text-purple-800">
+                        <Edit className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    {/* Color List for this Category */}
+                    <div className="space-y-2 mb-4">
+                      <h4 className="text-sm font-medium text-gray-700">Mevcut Renkler:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {/* Example colors - this should come from database */}
+                        {category.slug === 'clothing' && [
+                          { name: 'Siyah', hex: '#000000' },
+                          { name: 'Beyaz', hex: '#FFFFFF' },
+                          { name: 'Lacivert', hex: '#1E3A8A' },
+                          { name: 'Gri', hex: '#6B7280' },
+                          { name: 'Kırmızı', hex: '#DC2626' },
+                          { name: 'Yeşil', hex: '#16A34A' }
+                        ].map((color) => (
+                          <div key={color.name} className="flex items-center space-x-2 px-3 py-2 bg-purple-50 border border-purple-200 rounded-lg">
+                            <div 
+                              className="w-4 h-4 rounded-full border border-gray-300"
+                              style={{ backgroundColor: color.hex }}
+                            />
+                            <span className="text-sm text-gray-800">{color.name}</span>
+                            <button className="text-red-500 hover:text-red-700 ml-2">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                        
+                        {category.slug === 'footwear' && [
+                          { name: 'Siyah', hex: '#000000' },
+                          { name: 'Kahverengi', hex: '#92400E' },
+                          { name: 'Beyaz', hex: '#FFFFFF' },
+                          { name: 'Lacivert', hex: '#1E3A8A' }
+                        ].map((color) => (
+                          <div key={color.name} className="flex items-center space-x-2 px-3 py-2 bg-purple-50 border border-purple-200 rounded-lg">
+                            <div 
+                              className="w-4 h-4 rounded-full border border-gray-300"
+                              style={{ backgroundColor: color.hex }}
+                            />
+                            <span className="text-sm text-gray-800">{color.name}</span>
+                            <button className="text-red-500 hover:text-red-700 ml-2">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+
+                        {category.slug === 'accessories' && [
+                          { name: 'Altın', hex: '#F59E0B' },
+                          { name: 'Gümüş', hex: '#9CA3AF' },
+                          { name: 'Siyah', hex: '#000000' },
+                          { name: 'Kahverengi', hex: '#92400E' }
+                        ].map((color) => (
+                          <div key={color.name} className="flex items-center space-x-2 px-3 py-2 bg-purple-50 border border-purple-200 rounded-lg">
+                            <div 
+                              className="w-4 h-4 rounded-full border border-gray-300"
+                              style={{ backgroundColor: color.hex }}
+                            />
+                            <span className="text-sm text-gray-800">{color.name}</span>
+                            <button className="text-red-500 hover:text-red-700 ml-2">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Add New Color */}
+                    <div className="space-y-3">
+                      <div className="flex space-x-2">
+                        <input
+                          type="text"
+                          placeholder="Renk adı..."
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                        />
+                        <input
+                          type="color"
+                          className="w-12 h-10 border border-gray-300 rounded-lg cursor-pointer"
+                        />
+                        <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
+                      
+                      {/* Predefined Color Palette */}
+                      <div className="flex flex-wrap gap-2">
+                        <span className="text-xs text-gray-500">Hızlı seçim:</span>
+                        {[
+                          '#000000', '#FFFFFF', '#DC2626', '#16A34A', '#1E3A8A', '#7C2D12',
+                          '#F59E0B', '#9333EA', '#EC4899', '#6B7280'
+                        ].map((color) => (
+                          <button
+                            key={color}
+                            className="w-6 h-6 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                            style={{ backgroundColor: color }}
+                            title={color}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {categories.length === 0 && (
+                <div className="text-center py-12">
+                  <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Henüz kategori yok</h3>
+                  <p className="text-gray-600 mb-4">Renk yönetimi için önce kategori oluşturun.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'materials' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Malzeme Yönetimi</h2>
+                <div className="flex space-x-3">
+                  <button 
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Malzeme Kategorisi Ekle</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Category-based Material Management */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {categories.map((category) => (
+                  <div key={category.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <Award className="h-5 w-5 text-amber-600" />
+                        <h3 className="font-semibold text-gray-900">{category.name}</h3>
+                      </div>
+                      <button className="text-amber-600 hover:text-amber-800">
+                        <Edit className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    {/* Material List for this Category */}
+                    <div className="space-y-2 mb-4">
+                      <h4 className="text-sm font-medium text-gray-700">Mevcut Malzemeler:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {/* Example materials - this should come from database */}
+                        {category.slug === 'clothing' && [
+                          'Pamuk', 'Polyester', 'Yün', 'İpek', 'Keten', 'Viskon', 'Modal', 'Kaşmir', 'Elastan'
+                        ].map((material) => (
+                          <span key={material} className="px-3 py-1 bg-amber-100 text-amber-800 text-sm rounded-full flex items-center space-x-2">
+                            <span>{material}</span>
+                            <button className="hover:text-amber-900">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                        
+                        {category.slug === 'footwear' && [
+                          'Deri', 'Süet', 'Canvas', 'Mesh', 'Sentetik', 'Nubuk', 'Kauçuk'
+                        ].map((material) => (
+                          <span key={material} className="px-3 py-1 bg-amber-100 text-amber-800 text-sm rounded-full flex items-center space-x-2">
+                            <span>{material}</span>
+                            <button className="hover:text-amber-900">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+
+                        {category.slug === 'accessories' && [
+                          'Altın', 'Gümüş', 'Pirinç', 'Çelik', 'Deri', 'Kumaş', 'Plastik', 'Cam'
+                        ].map((material) => (
+                          <span key={material} className="px-3 py-1 bg-amber-100 text-amber-800 text-sm rounded-full flex items-center space-x-2">
+                            <span>{material}</span>
+                            <button className="hover:text-amber-900">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+
+                        {category.slug === 'bags' && [
+                          'Deri', 'Kanvas', 'Naylon', 'Sentetik', 'Süet', 'PVC', 'Kumaş'
+                        ].map((material) => (
+                          <span key={material} className="px-3 py-1 bg-amber-100 text-amber-800 text-sm rounded-full flex items-center space-x-2">
+                            <span>{material}</span>
+                            <button className="hover:text-amber-900">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Add New Material */}
+                    <div className="space-y-3">
+                      <div className="flex space-x-2">
+                        <input
+                          type="text"
+                          placeholder="Malzeme adı..."
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                        />
+                        <button className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors">
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
+                      
+                      {/* Material Properties */}
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="flex items-center space-x-2">
+                          <input type="checkbox" className="rounded" />
+                          <span className="text-xs text-gray-600">Yıkanabilir</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input type="checkbox" className="rounded" />
+                          <span className="text-xs text-gray-600">Su geçirmez</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input type="checkbox" className="rounded" />
+                          <span className="text-xs text-gray-600">Nefes alır</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input type="checkbox" className="rounded" />
+                          <span className="text-xs text-gray-600">Elastik</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {categories.length === 0 && (
+                <div className="text-center py-12">
+                  <Award className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Henüz kategori yok</h3>
+                  <p className="text-gray-600 mb-4">Malzeme yönetimi için önce kategori oluşturun.</p>
                 </div>
               )}
             </div>

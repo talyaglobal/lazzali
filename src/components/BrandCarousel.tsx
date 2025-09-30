@@ -121,7 +121,7 @@ export default function BrandCarousel() {
           className="text-center mt-16"
         >
           <Link href="/brands" className="luxury-button-outline">
-            Tüm 12 Markayı Görüntüle
+            Tüm {brands.length} Markayı Görüntüle
           </Link>
         </motion.div>
       </div>
