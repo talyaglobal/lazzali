@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft, Heart, ShoppingBag, Truck, RotateCcw, Shield, Star } from 'lucide-react'
 import { getProduct } from '@/lib/products'
 import { useStore } from '@/lib/store'
+import ShoppingCart from '@/components/ShoppingCart'
 
 interface ProductPageProps {
   params: Promise<{
@@ -57,7 +58,7 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
 }
 
 function ProductDetail({ product }: { product: any }) {
-  const { addToCart } = useStore()
+  const { addToCart, toggleCart } = useStore()
   
   const [quantity, setQuantity] = useState(1)
 
@@ -65,7 +66,11 @@ function ProductDetail({ product }: { product: any }) {
     for (let i = 0; i < quantity; i++) {
       addToCart(product)
     }
+    // Show success notification and open cart after a short delay
     alert('Ürün sepete eklendi!')
+    setTimeout(() => {
+      toggleCart()
+    }, 100)
   }
 
   return (
@@ -244,6 +249,7 @@ function ProductDetail({ product }: { product: any }) {
           </div>
         </div>
       </div>
+      <ShoppingCart />
     </div>
   )
 }

@@ -87,6 +87,8 @@ export default function AdminDashboard() {
   const [showAddMember, setShowAddMember] = useState(false)
   const [selectedBrandFilter, setSelectedBrandFilter] = useState<string>('')
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('')
+  const [showViewProduct, setShowViewProduct] = useState(false)
+  const [viewingProduct, setViewingProduct] = useState<any>(null)
 
   useEffect(() => {
     loadData()
@@ -461,6 +463,11 @@ export default function AdminDashboard() {
     })
     setShowAddProduct(false)
     alert('Ürün başarıyla eklendi!')
+  }
+
+  const handleViewProduct = (product: any) => {
+    setViewingProduct(product)
+    setShowViewProduct(true)
   }
 
   const handleEditProduct = (product: any) => {
@@ -907,10 +914,31 @@ export default function AdminDashboard() {
                         <tr key={product.id} className="border-b border-gray-100">
                           <td className="p-4">
                             <div className="flex items-center space-x-3">
-                              <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                              <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden">
+                                {product.images && product.images.length > 0 ? (
+                                  <img 
+                                    src={product.images[0]} 
+                                    alt={product.name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                      const parent = target.parentElement;
+                                      if (parent) {
+                                        parent.className = 'w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center';
+                                        parent.innerHTML = '<span class="text-gray-500 text-xs">Resim Yok</span>';
+                                      }
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <span className="text-gray-500 text-xs">Resim Yok</span>
+                                  </div>
+                                )}
+                              </div>
                               <div>
                                 <p className="text-sm font-medium text-gray-900">{product.name}</p>
-                                <p className="text-xs text-gray-500">ID: {product.id}</p>
+                                <p className="text-xs text-gray-500">ID: {product.id?.substring(0, 8)}...</p>
                               </div>
                             </div>
                           </td>
@@ -927,14 +955,23 @@ export default function AdminDashboard() {
                           <td className="p-4">
                             <div className="flex items-center space-x-2">
                               <button 
+                                onClick={() => handleViewProduct(product)}
+                                className="text-blue-600 hover:text-blue-800"
+                                title="Görüntüle"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </button>
+                              <button 
                                 onClick={() => handleEditProduct(product)}
                                 className="text-green-600 hover:text-green-800"
+                                title="Düzenle"
                               >
                                 <Edit className="h-4 w-4" />
                               </button>
                               <button 
                                 onClick={() => handleDeleteProduct(product.id)}
                                 className="text-red-600 hover:text-red-800"
+                                title="Sil"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -2433,6 +2470,169 @@ export default function AdminDashboard() {
                 <Save className="h-4 w-4" />
                 <span>Güncelle</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Product Modal */}
+      {showViewProduct && viewingProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Ürün Detayları</h3>
+              <button
+                onClick={() => {
+                  setShowViewProduct(false)
+                  setViewingProduct(null)
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Product Images */}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-4">Ürün Görselleri</h4>
+                  <div className="space-y-4">
+                    {viewingProduct.images && viewingProduct.images.length > 0 ? (
+                      viewingProduct.images.map((image: string, index: number) => (
+                        <div key={index} className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+                          <img 
+                            src={image} 
+                            alt={`${viewingProduct.name} - ${index + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const parent = target.parentElement;
+                              if (parent) {
+                                parent.className = 'w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center';
+                                parent.innerHTML = '<span class="text-gray-500">Görsel yüklenemedi</span>';
+                              }
+                            }}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <span className="text-gray-500">Görsel bulunamadı</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Product Details */}
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-4">Temel Bilgiler</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs text-gray-500">Ürün Adı</label>
+                        <p className="text-sm font-medium text-gray-900">{viewingProduct.name}</p>
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500">Marka</label>
+                        <p className="text-sm text-gray-900">{viewingProduct.brand || 'Bilinmiyor'}</p>
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500">Kategori</label>
+                        <p className="text-sm text-gray-900">{viewingProduct.category || 'Kategori Yok'}</p>
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500">SKU</label>
+                        <p className="text-sm text-gray-900">{viewingProduct.sku || 'Belirtilmemiş'}</p>
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500">Fiyat</label>
+                        <p className="text-sm font-bold text-gray-900">{viewingProduct.price?.toLocaleString('tr-TR')}₺</p>
+                      </div>
+                      {viewingProduct.compare_price && (
+                        <div>
+                          <label className="text-xs text-gray-500">Karşılaştırma Fiyatı</label>
+                          <p className="text-sm text-gray-500 line-through">{viewingProduct.compare_price?.toLocaleString('tr-TR')}₺</p>
+                        </div>
+                      )}
+                      <div>
+                        <label className="text-xs text-gray-500">Stok Durumu</label>
+                        <span className={`inline-block px-2 py-1 text-xs rounded-full ${
+                          viewingProduct.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {viewingProduct.inStock ? 'Stokta' : 'Tükendi'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {viewingProduct.description && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Açıklama</h4>
+                      <p className="text-sm text-gray-600">{viewingProduct.description}</p>
+                    </div>
+                  )}
+
+                  {viewingProduct.short_description && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Kısa Açıklama</h4>
+                      <p className="text-sm text-gray-600">{viewingProduct.short_description}</p>
+                    </div>
+                  )}
+
+                  {viewingProduct.tags && viewingProduct.tags.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Etiketler</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {viewingProduct.tags.map((tag: string, index: number) => (
+                          <span 
+                            key={index}
+                            className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">Sistem Bilgileri</h4>
+                    <div className="space-y-1 text-xs text-gray-500">
+                      <p>ID: {viewingProduct.id}</p>
+                      <p>Oluşturulma: {new Date(viewingProduct.created_at).toLocaleDateString('tr-TR')}</p>
+                      {viewingProduct.updated_at && (
+                        <p>Güncellenme: {new Date(viewingProduct.updated_at).toLocaleDateString('tr-TR')}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-between">
+              <button
+                onClick={() => {
+                  setShowViewProduct(false)
+                  setViewingProduct(null)
+                }}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Kapat
+              </button>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setShowViewProduct(false)
+                    handleEditProduct(viewingProduct)
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2"
+                >
+                  <Edit className="h-4 w-4" />
+                  <span>Düzenle</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
