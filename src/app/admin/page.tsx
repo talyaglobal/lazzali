@@ -102,13 +102,16 @@ export default function AdminDashboard() {
       // Transform products data to match admin dashboard structure
       const transformedProducts = productsData.map((product: any) => ({
         ...product,
-        brand: product.brands?.name || product.brand || '',
-        brandId: product.brand_id || product.brandId,
-        category: product.categories?.name || product.category || '',
-        inStock: product.is_active || product.inStock || false,
-        isNew: product.is_featured || product.isNew || false,
+        brand: product.brands?.name || product.brand || 'Bilinmiyor',
+        brandId: product.brand_id || product.brandId || '',
+        category: product.categories?.name || product.category || 'Kategori Yok',
+        inStock: product.is_active !== undefined ? product.is_active : (product.inStock || false),
+        isNew: product.is_featured !== undefined ? product.is_featured : (product.isNew || false),
         images: product.product_images?.map((img: any) => img.url) || product.images || [],
       }))
+      
+      console.log('Admin Dashboard - Loaded products:', transformedProducts.length)
+      console.log('Admin Dashboard - Sample product:', transformedProducts[0])
       
       setProductsList(transformedProducts)
       setBrands(brandsData)
@@ -155,7 +158,7 @@ export default function AdminDashboard() {
     { id: '1004', customer: 'Fatih Özkan', amount: 340, status: 'Tamamlandı', date: '2025-01-25' },
   ]
 
-  // MEN'S VIP CLUB Loyalty System Data
+  // MEN VIP CLUB Loyalty System Data
   const [vipMembers, setVipMembers] = useState([
     {
       id: 'VIP001',
@@ -590,7 +593,7 @@ export default function AdminDashboard() {
                   }`}
                 >
                   <Crown className="h-5 w-5" />
-                  <span>MEN'S VIP CLUB</span>
+                  <span>MEN VIP CLUB</span>
                 </button>
               </li>
               <li>
@@ -1319,7 +1322,7 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-3">
                   <Crown className="h-8 w-8 text-yellow-600" />
-                  <h2 className="text-2xl font-bold text-gray-900">MEN'S VIP CLUB - Loyalty & Dealer System</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">MEN VIP CLUB - Loyalty & Dealer System</h2>
                 </div>
                 <div className="flex items-center space-x-4">
                   <ImportExportButtons
