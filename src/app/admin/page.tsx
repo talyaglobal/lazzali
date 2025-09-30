@@ -98,7 +98,19 @@ export default function AdminDashboard() {
         getProducts({ limit: 100 }),
         getBrands(true)
       ])
-      setProductsList(productsData)
+      
+      // Transform products data to match admin dashboard structure
+      const transformedProducts = productsData.map((product: any) => ({
+        ...product,
+        brand: product.brands?.name || product.brand || '',
+        brandId: product.brand_id || product.brandId,
+        category: product.categories?.name || product.category || '',
+        inStock: product.is_active || product.inStock || false,
+        isNew: product.is_featured || product.isNew || false,
+        images: product.product_images?.map((img: any) => img.url) || product.images || [],
+      }))
+      
+      setProductsList(transformedProducts)
       setBrands(brandsData)
     } catch (error) {
       console.error('Error loading data:', error)
