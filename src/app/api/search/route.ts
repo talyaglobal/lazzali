@@ -31,11 +31,12 @@ export async function GET(request: NextRequest) {
           price,
           currency,
           short_description,
+          tags,
           brands:brand_id (name),
           product_images!inner (url, is_primary)
         `)
         .eq('is_active', true)
-        .or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,short_description.ilike.%${searchQuery}%`)
+        .or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,short_description.ilike.%${searchQuery}%,tags.cs.{${searchQuery}}`)
         .limit(limit)
 
       results.products = products || []

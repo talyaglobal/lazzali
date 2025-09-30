@@ -90,7 +90,7 @@ export const getProducts = async (options?: {
   }
 
   if (options?.search) {
-    query = query.ilike('name', `%${options.search}%`)
+    query = query.or(`name.ilike.%${options.search}%,tags.cs.{${options.search}}`)
   }
 
   if (options?.limit) {
