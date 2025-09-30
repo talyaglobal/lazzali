@@ -180,7 +180,7 @@ function ProductDetail({ product }: { product: any }) {
             <div className="space-y-3">
               <button
                 onClick={handleAddToCart}
-                className="w-full bg-luxury-black text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center space-x-2"
+                className="w-full bg-black text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center space-x-2"
               >
                 <ShoppingBag className="h-5 w-5" />
                 <span>Sepete Ekle</span>
