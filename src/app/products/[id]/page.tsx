@@ -6,6 +6,7 @@ import { ArrowLeft, Heart, ShoppingBag, Truck, RotateCcw, Shield, Star } from 'l
 import { getProduct } from '@/lib/products'
 import { useStore } from '@/lib/store'
 import { useRating } from '@/lib/rating-context'
+import { useWishlist } from '@/lib/wishlist-context'
 import ShoppingCart from '@/components/ShoppingCart'
 
 interface ProductPageProps {
@@ -61,15 +62,27 @@ export default function ProductDetailPage({ params }: ProductPageProps) {
 function ProductDetail({ product }: { product: any }) {
   const { addToCart, toggleCart } = useStore()
   const { getRating, setRating: setGlobalRating } = useRating()
+  const { isInWishlist, toggleWishlist } = useWishlist()
   
   const [quantity, setQuantity] = useState(1)
   const [hoverRating, setHoverRating] = useState(0)
   
   const rating = getRating(product.id)
+  const inWishlist = isInWishlist(product.id)
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
-      addToCart(product)
+      addToCart({
+        id: product.id,
+        productId: product.id,
+        name: product.name,
+        brand: product.brand_name || 'Luxury Brand',
+        price: product.price,
+        image: product.product_images?.[0]?.url || '/placeholder-product.jpg',
+        size: 'Standard',
+        color: 'Default',
+        inStock: true
+      })
     }
     // Show success notification and open cart after a short delay
     alert('Ürün sepete eklendi!')
@@ -97,12 +110,38 @@ function ProductDetail({ product }: { product: any }) {
           <div className="space-y-4">
             {/* Main Image */}
             <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center">
-              <div className="w-64 h-64 bg-luxury-gold/10 rounded-lg flex items-center justify-center">
-                <span className="font-luxury-serif text-6xl font-bold text-luxury-gold">
-                  {product.name?.charAt(0) || 'P'}
-                </span>
-              </div>
+              {product.product_images?.[0]?.url ? (
+                <img
+                  src={product.product_images[0].url}
+                  alt={product.product_images[0].alt_text || product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-64 h-64 bg-luxury-gold/10 rounded-lg flex items-center justify-center">
+                  <span className="font-luxury-serif text-6xl font-bold text-luxury-gold">
+                    {product.name?.charAt(0) || 'P'}
+                  </span>
+                </div>
+              )}
             </div>
+            
+            {/* Thumbnail Images */}
+            {product.product_images && product.product_images.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {product.product_images.slice(0, 4).map((image: any, index: number) => (
+                  <div
+                    key={index}
+                    className="aspect-square bg-gray-50 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                  >
+                    <img
+                      src={image.url}
+                      alt={image.alt_text || `${product.name} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Information */}
@@ -110,7 +149,26 @@ function ProductDetail({ product }: { product: any }) {
             {/* Brand and Title */}
             <div>
               <p className="text-sm font-medium text-luxury-gold mb-2">{product.brand_name || 'Luxury Brand'}</p>
-              <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+              <div className="flex items-center justify-between">
+                <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+                <button
+                  onClick={() => toggleWishlist({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.product_images?.[0]?.url || '/placeholder-product.jpg',
+                    brand: product.brand_name || 'Luxury Brand',
+                    slug: product.slug || product.id
+                  })}
+                  className={`p-2 rounded-full transition-colors ${
+                    inWishlist 
+                      ? 'text-red-500 bg-red-50 hover:bg-red-100' 
+                      : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
+                  }`}
+                >
+                  <Heart className={`h-6 w-6 ${inWishlist ? 'fill-red-500' : ''}`} />
+                </button>
+              </div>
               <div className="flex items-center space-x-2 mt-2">
                 <div className="flex items-center space-x-1">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -206,11 +264,25 @@ function ProductDetail({ product }: { product: any }) {
               </button>
               
               <button
-                onClick={() => alert('Favorilere eklendi!')}
-                className="w-full border border-gray-300 text-gray-900 py-3 px-6 rounded-lg font-medium hover:border-gray-400 transition-colors flex items-center justify-center space-x-2"
+                onClick={() => {
+                  toggleWishlist({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.product_images?.[0]?.url || '/placeholder-product.jpg',
+                    brand: product.brand_name || 'Luxury Brand',
+                    slug: product.slug || product.id
+                  })
+                  alert(inWishlist ? 'Favorilerden çıkarıldı!' : 'Favorilere eklendi!')
+                }}
+                className={`w-full py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 ${
+                  inWishlist 
+                    ? 'bg-red-50 border border-red-200 text-red-700 hover:bg-red-100' 
+                    : 'border border-gray-300 text-gray-900 hover:border-gray-400'
+                }`}
               >
-                <Heart className="h-5 w-5" />
-                <span>Favorilere Ekle</span>
+                <Heart className={`h-5 w-5 ${inWishlist ? 'fill-red-500 text-red-500' : ''}`} />
+                <span>{inWishlist ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}</span>
               </button>
             </div>
 

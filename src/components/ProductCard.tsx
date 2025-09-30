@@ -8,6 +8,7 @@ import { useStore } from '@/lib/store'
 import { formatPriceWithoutSymbol } from '@/lib/utils'
 import { useState } from 'react'
 import { useRating } from '@/lib/rating-context'
+import { useWishlist } from '@/lib/wishlist-context'
 
 interface ProductCardProps {
   product: any
@@ -16,10 +17,12 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useStore()
   const { getRating, setRating: setGlobalRating } = useRating()
+  const { isInWishlist, toggleWishlist } = useWishlist()
   const [quantity, setQuantity] = useState(1)
   const [hoverRating, setHoverRating] = useState(0)
   
   const rating = getRating(product.id)
+  const inWishlist = isInWishlist(product.id)
   
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation to product page
@@ -114,13 +117,24 @@ export default function ProductCard({ product }: ProductCardProps) {
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              // Heart/wishlist functionality here
+              toggleWishlist({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.product_images?.[0]?.url || '/placeholder-product.jpg',
+                brand: product.brands?.name || 'Luxury Brand',
+                slug: product.slug || product.id
+              })
             }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50"
+            className={`w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md transition-colors ${
+              inWishlist 
+                ? 'text-red-500 hover:bg-red-50' 
+                : 'text-gray-400 hover:bg-gray-50 hover:text-red-500'
+            }`}
           >
-            <Heart className="w-5 h-5" />
+            <Heart className={`w-5 h-5 ${inWishlist ? 'fill-red-500' : ''}`} />
           </motion.button>
           <motion.button
             onClick={(e) => {
